@@ -1,0 +1,16 @@
+*.jpg
+*.png
+*.pdf
+*.json
+!swagger.json
+*.js
+token.txt
+
+.idea/
+.vscode/
+data/
+
+values_local.yaml
+sectet.yaml
+db-reset.ps1
+jet.ps1
