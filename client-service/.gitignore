@@ -9,6 +9,7 @@ token.txt
 .idea/
 .vscode/
 data/
+**/database/*
 
 values_local.yaml
 sectet.yaml
