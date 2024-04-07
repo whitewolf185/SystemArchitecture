@@ -25,6 +25,10 @@ func (dr domainRepo) filterConstructorRoute(filter interface{}) bson.D {
 			}
 
 		case time.Time:
+		case []string:
+			if len(value) != 0 {
+				newFilter = append(newFilter, bson.E{Key: tagName, Value: bson.M{"$in": r.Field(i).Interface()}})
+			}
 		}
 	}
 

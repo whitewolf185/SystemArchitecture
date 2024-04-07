@@ -1,4 +1,4 @@
-# Сервис по сбору тематических изображений
+# Сервис маршрутов и попутчиков
 
 # Описание
 Перед вами микросервис, который отвечает за клиентскую информацию в сервисе.
@@ -22,7 +22,7 @@
 ```yaml
 env:
   - name: db_dsn
-    value: postgres:///
+    value: mongodb://<user_name>:<password>@<host>:<port>
 
   - name: listen_port
     value: 80
@@ -42,97 +42,139 @@ docker compose -f "domain-service/docker-compose.yaml" up -d --build
 ```
 
 Поддерживаются следующие методы:
-- CreateUser (POST)
-- SearchUserByUserName (GET)
-- GetClientByID (GET)
-- DeleteUserByID (DELETE)
+- GetCompanionInfo (GET)
+- GetRouteInfo (GET)
+- CreateRoute (POST)
+- CreateCompanion (POST)
+- DeleteRoute (DELETE)
+- DeleteCompanion (DELETE)
 
 После локального запуска, будет доступен swagger, где можно опробовать почти каждый метод.
 Swagger http://<your_IP>:<your_port>/docs/index.html
 
-### CreateUser (POST)
-Post запрос для создания пользователя
+### GetCompanionInfo (GET)
+Получение списка попутчиков по фильтрам.
+
+Пример запроса:
+```bash
+curl -X 'GET' \
+  'http://localhost:8080/api/domain/GetCompanionInfo?client_id=fdskj&destination=destination' \
+  -H 'accept: application/json'
+```
+
+Пример ответа:
+```json
+[
+  {
+    "client_id": "string",
+    "destination": "string"
+  }
+]
+```
+
+### GetCompanionInfo (GET)
+Получение списка маршрутов по фильтрам. 
+_Один пользователь может иметь только один маршрут, но несколько пунктов назначения._
+
+Пример запроса:
+```bash
+curl -X 'GET' \
+  'http://localhost:8080/api/domain/GetRouteInfo?one_of_path=Moscow' \
+  -H 'accept: application/json'
+```
+
+Пример ответа:
+```json
+[
+  {
+    "client_id": "b69bf55e-e044-4f11-8c4c-546e242eaca0",
+    "path": [
+      "Moscow",
+      "Piter"
+    ]
+  }
+]
+```
+
+### CreateRoute (POST)
+Post запрос, который создает маршрут
 
 Пример запроса:
 ```bash
 curl -X 'POST' \
-  'http://localhost:8080/api/person/CreateUser' \
+  'http://localhost:8080/api/domain/CreateRoute' \
   -H 'accept: application/json' \
   -H 'Content-Type: application/json' \
   -d '{
-  "is_driver": true,
-  "password": "string",
-  "user_name": "another_string"
+  "client_id": "82c44825-3cb0-4c61-bb6e-4c781f28d597",
+  "path": [
+    "Moscow", "Piter", "Новосибирск"
+  ]
 }'
 ```
 
 Пример ответа:
 ```json
 {
-  "id": "65e44dae-61e5-4589-abac-ee71c2f01fac",
-  "user_name": "another_string",
-  "driver": true
+  "client_id": "82c44825-3cb0-4c61-bb6e-4c781f28d597",
+  "path": [
+    "Moscow",
+    "Piter",
+    "Новосибирск"
+  ]
 }
-```
 
-### SearchUserByUserName (GET)
-Get запрос, который выдает пользователей, у которых совпал substring в имени пользователя
+```
+### CreateCompanion (POST)
+Post запрос, который создает попутчика с назначением куда бы он хотел добраться
 
 Пример запроса:
 ```bash
-curl -X 'GET' \
-  'http://localhost:8080/api/person/SearchUserByUserName?user_name_in=string' \
-  -H 'accept: application/json'
-```
-
-Пример ответа:
-```json
-
-[
-  {
-    "driver": true,
-    "id": "string",
-    "user_name": "string"
-  }
-]
-
-```
-### GetClientByID (GET)
-Get запрос, который находит пользователя по его UUID
-Пример запроса:
-```bash
-curl -X 'GET' \
-  'http://localhost:8080/api/person/GetClientByID?id=65e44dae-61e5-4589-abac-ee71c2f01fac' \
-  -H 'accept: application/json'
+curl -X 'POST' \
+  'http://localhost:8080/api/domain/CreateCompanion' \
+  -H 'accept: application/json' \
+  -H 'Content-Type: application/json' \
+  -d '{
+  "client_id": "82c44825-3cb0-4c61-bb6e-4c781f28d597",
+  "destination": "Moscow"
+}'
 ```
 
 Пример ответа:
 ```json
 {
-  "driver": true,
-  "id": "string",
-  "user_name": "string"
+  "client_id": "82c44825-3cb0-4c61-bb6e-4c781f28d597",
+  "destination": "Moscow"
 }
-
 ```
 
 
-### DeleteUserByID (DELETE)
-Delete запрос, который удаляет пользователя по его UUID. Причем, повторив данную операцию, будет выдаваться ошибка, сигнализирующая, что пользователя больше нет.
+### DeleteRoute (DELETE)
+Delete запрос, который удаляет сущность маршрута у пользователя.
 
 Пример запроса:
 ```bash
 curl -X 'DELETE' \
-  'http://localhost:8080/api/person/DeleteUserByID?id=65e44dae-61e5-4589-abac-ee71c2f01fac' \
+  'http://localhost:8080/api/domain/DeleteCompanion?client_id=82c44825-3cb0-4c61-bb6e-4c781f28d597' \
   -H 'accept: application/json'
 ```
 
 Пример ответа:
-```json
-{
-  "driver": true,
-  "id": "string",
-  "user_name": "string"
-}
+В этом случае надо смотреть на коды ошибки. 
+- Если 200, то все получилось; 
+- если 404, то нечего удалять
 
+### DeleteCompanion (DELETE)
+Delete запрос, который удаляет сущность попутчика у пользователя.
+
+Пример запроса:
+```bash
+curl -X 'DELETE' \
+  'http://localhost:8080/api/domain/DeleteRoute?client_id=82c44825-3cb0-4c61-bb6e-4c781f28d597' \
+  -H 'accept: application/json'
 ```
+
+Пример ответа:
+В этом случае надо смотреть на коды ошибки. 
+- Если 200, то все получилось; 
+- если 404, то нечего удалять
