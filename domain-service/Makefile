@@ -8,14 +8,12 @@ DOCKER_DB_DSN:=postgres://postgres:postgres@db:5432/$(LOCAL_DB)
 
 bin-deps:
 	@echo -- 🛠️ build local depencies --
-	go install github.com/pressly/goose/v3/cmd/goose@latest
-	go install github.com/go-jet/jet/v2/cmd/jet@latest
 	go install go.uber.org/mock/mockgen@latest
 	go install github.com/swaggo/swag/cmd/swag@latest
+	go install golang.org/x/tools/cmd/stringer@latest
 
 docker-bin-deps:
 	@echo -- 🛠️ build docker local depencies --
-	go install github.com/pressly/goose/v3/cmd/goose@latest
 
 db-reset:
 	@echo -- 🛢 reset database $(LOCAL_DB) --

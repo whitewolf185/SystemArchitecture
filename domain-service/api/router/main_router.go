@@ -34,7 +34,7 @@ func NewRouter(
 	// обязательный mount на все. Нужен для создания запросов на /api
 	// Например:
 	// root.Mount("/api", newCusmomRouter)
-	root.Mount("/person", newPersonRouter(errHandler))
+	root.Mount("/domain", newDomainRouter(errHandler))
 
 	rootApi := chi.NewRouter()
 	rootApi.Get("/docs/*", httpSwagger.Handler(

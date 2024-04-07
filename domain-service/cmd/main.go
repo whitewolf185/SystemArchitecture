@@ -11,22 +11,16 @@ import (
 	"github.com/whitewolf185/SystemArchitecture/domain-service/internal/app"
 	"github.com/whitewolf185/SystemArchitecture/domain-service/internal/config"
 	"github.com/whitewolf185/SystemArchitecture/domain-service/internal/config/flags"
-	"github.com/whitewolf185/SystemArchitecture/domain-service/internal/repository"
 )
 
 func main() {
-	ctx := context.Background()
+	_ = context.Background()
 	flags.InitServiceFlags()
-	db, err := config.ConnectPostgres(ctx)
-	if err != nil {
-		logrus.Fatalln("cannot connect to postgresql ", err)
-	}
 
 	// -- depencies --
-	personRepo := repository.NewPersonController(db)
 
 	// Имплементация API
-	application, err := app.NewImplementation(personRepo)
+	application, err := app.NewImplementation()
 	if err != nil {
 		logrus.Fatalln("cannot configure implementation")
 	}

@@ -4,49 +4,66 @@ import (
 	"context"
 )
 
-type HandlerType string
+type HandlerType int
 
+// route -- маршрут
+// companion -- попутчик
+
+//go:generate stringer -type=HandlerType -output=./handler_types_string.go
 const (
-	GetClientByID        = HandlerType("GetClientByID")
-	CreateUser           = HandlerType("CreateUser")
-	SearchUserByUserName = HandlerType("SearchUserByUserName")
-	DeleteUserByID       = HandlerType("DeleteUserByID")
+	GetCompanionInfo HandlerType = iota
+	GetRouteInfo
+	CreateRoute
+	CreateCompanion
+	DeleteRoute
+	DeleteCompanion
 )
 
 // Интерфейс со всеми ручками сервиса
 type Handlers interface {
-	// GetClientByID - получение пользователя по его id
-	GetClientByID(ctx context.Context, req *GetPersonByIDRequest) (*Person, error)
-	// CreateUser - создание пользователя с указанием его пароля и логина
-	CreateUser(ctx context.Context, req *CreateUserRequest) (*Person, error)
-	// SearchUserByUserName - поиск пользователя по substring его userName. В итоге появляется массив
-	SearchUserByUserName(ctx context.Context, req *SearchUserByUserNameRequest) ([]Person, error)
-	// DeleteUserByID - удаляет пользователя по его id
-	DeleteUserByID(ctx context.Context, req *DeleteUserByIDRequest) (*Person, error)
+	// GetCompanionInfo - получение информации о попутчике
+	GetCompanionInfo(ctx context.Context, req *GetCompanionInfoRequest) (*Companion, error)
+	// GetRouteInfo - получение информации о маршруте
+	GetRouteInfo(ctx context.Context, req *GetRouteInfoRequest) (*Route, error)
+	// CreateRoute - создание маршрута
+	CreateRoute(ctx context.Context, req *CreateRouteRequest) (*Route, error)
+	// CreateCompanion - создание попутчика
+	CreateCompanion(ctx context.Context, req *CreateCompanionRequest) (*Companion, error)
+	// DeleteRoute - удалить маршрут
+	DeleteRoute(ctx context.Context, req *DeleteRouteRequest) error
+	// DeleteCompanion - удалить попутчика
+	DeleteCompanion(ctx context.Context, req *DeleteCompanionRequest) error
 }
 
-type GetPersonByIDRequest struct {
-	ID string `in:"query=id"`
+type Companion struct {
 }
-type Person struct {
-	ID       string `json:"id"`
-	UserName string `json:"user_name"`
-	IsDriver bool   `json:"driver"`
+type Route struct {
 }
 
-type CreateUserPayload struct {
-	UserName string `json:"user_name"`
-	IsDriver bool   `json:"is_driver"`
-	Password string `json:"password"`
-}
-type CreateUserRequest struct {
-	Payload *CreateUserPayload `json:"payload" in:"body=json"`
+type GetCompanionInfoRequest struct {
+	ClientID string `in:"query=client_id"`
 }
 
-type SearchUserByUserNameRequest struct {
-	UserNameIn string `in:"query=user_name_in"`
+type GetRouteInfoRequest struct {
+	ClientID string `in:"query=client_id"`
 }
 
-type DeleteUserByIDRequest struct {
-	ID string `in:"query=id"`
+type CreateRouteRequestPayload struct {
+	ClientID string `json:"client_id" bson:"_id"`
+}
+type CreateRouteRequest struct {
+	Payload *CreateRouteRequestPayload `json:"payload" in:"body=json"`
+}
+
+type CreateCompanionRequestPayload struct {
+	ClientID string `json:"client_id" bson:"_id"`
+}
+type CreateCompanionRequest struct {
+	Payload *CreateCompanionRequestPayload `json:"payload" in:"body=json"`
+}
+
+type DeleteRouteRequest struct {
+}
+
+type DeleteCompanionRequest struct {
 }
