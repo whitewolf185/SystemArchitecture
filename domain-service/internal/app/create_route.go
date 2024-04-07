@@ -28,5 +28,6 @@ func (i Implementation) CreateRoute(ctx context.Context, req *domain.CreateRoute
 
 	return &domain.Route{
 		ClientID: req.Payload.ClientID,
+		Path:     req.Payload.Path,
 	}, nil
 }

@@ -1,6 +1,6 @@
 env:
   - name: db_dsn
-    value: mongodb://db:5432
+    value: mongodb://root:example@db:27017
 
   - name: listen_port
     value: 8080

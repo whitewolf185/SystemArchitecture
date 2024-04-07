@@ -9,5 +9,5 @@ swag-gen: bin-deps
 	@echo -- 😎 swagger generation --
 	swag init -p snakecase --parseInternal --pd -g ./internal/app/service.go
 
-run:
+run: swag-gen
 	go run ./cmd/main.go

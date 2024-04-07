@@ -25,6 +25,7 @@ func (i Implementation) GetRouteInfo(ctx context.Context, req *domain.GetRouteIn
 
 	result, err := i.repo.GetRoutes(ctx, domain.Route{
 		ClientID: req.ClientID,
+		Path:     []string{req.OneOfPath},
 	})
 	if err != nil {
 		switch {

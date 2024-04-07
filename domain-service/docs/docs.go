@@ -173,6 +173,11 @@ const docTemplate = `{
                         "type": "string",
                         "name": "client_id",
                         "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "name": "destination",
+                        "in": "query"
                     }
                 ],
                 "responses": {
@@ -212,6 +217,11 @@ const docTemplate = `{
                         "type": "string",
                         "name": "client_id",
                         "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "name": "one_of_path",
+                        "in": "query"
                     }
                 ],
                 "responses": {
@@ -240,6 +250,9 @@ const docTemplate = `{
             "properties": {
                 "client_id": {
                     "type": "string"
+                },
+                "destination": {
+                    "type": "string"
                 }
             }
         },
@@ -247,6 +260,9 @@ const docTemplate = `{
             "type": "object",
             "properties": {
                 "client_id": {
+                    "type": "string"
+                },
+                "destination": {
                     "type": "string"
                 }
             }
@@ -256,6 +272,12 @@ const docTemplate = `{
             "properties": {
                 "client_id": {
                     "type": "string"
+                },
+                "path": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
                 }
             }
         },
@@ -264,6 +286,12 @@ const docTemplate = `{
             "properties": {
                 "client_id": {
                     "type": "string"
+                },
+                "path": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
                 }
             }
         },

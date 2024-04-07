@@ -36,29 +36,35 @@ type Handlers interface {
 }
 
 type Companion struct {
-	ClientID string `bson:"_id" json:"client_id"`
+	ClientID    string `bson:"_id" json:"client_id"`
+	Destination string `json:"destination"`
 }
 type Route struct {
-	ClientID string `bson:"_id" json:"client_id"`
+	ClientID string   `bson:"_id" json:"client_id"`
+	Path     []string `json:"path"`
 }
 
 type GetCompanionInfoRequest struct {
-	ClientID string `in:"query=client_id"`
+	ClientID    string `in:"query=client_id"`
+	Destination string `json:"destination" in:"query=destination"`
 }
 
 type GetRouteInfoRequest struct {
-	ClientID string `in:"query=client_id"`
+	ClientID  string `in:"query=client_id"`
+	OneOfPath string `json:"one_of_path" in:"query=one_of_path"`
 }
 
 type CreateRouteRequestPayload struct {
-	ClientID string `json:"client_id" bson:"_id"`
+	ClientID string   `json:"client_id" bson:"_id"`
+	Path     []string `json:"path"`
 }
 type CreateRouteRequest struct {
 	Payload *CreateRouteRequestPayload `json:"payload" in:"body=json"`
 }
 
 type CreateCompanionRequestPayload struct {
-	ClientID string `json:"client_id" bson:"_id"`
+	ClientID    string `json:"client_id" bson:"_id"`
+	Destination string `json:"destination"`
 }
 type CreateCompanionRequest struct {
 	Payload *CreateCompanionRequestPayload `json:"payload" in:"body=json"`

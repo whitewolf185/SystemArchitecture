@@ -27,6 +27,7 @@ func (i Implementation) CreateCompanion(ctx context.Context, req *domain.CreateC
 	}
 
 	return &domain.Companion{
-		ClientID: req.Payload.ClientID,
+		ClientID:    req.Payload.ClientID,
+		Destination: req.Payload.Destination,
 	}, nil
 }

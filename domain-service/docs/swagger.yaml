@@ -4,21 +4,33 @@ definitions:
     properties:
       client_id:
         type: string
+      destination:
+        type: string
     type: object
   github_com_whitewolf185_SystemArchitecture_domain-service_api_domain.CreateCompanionRequestPayload:
     properties:
       client_id:
+        type: string
+      destination:
         type: string
     type: object
   github_com_whitewolf185_SystemArchitecture_domain-service_api_domain.CreateRouteRequestPayload:
     properties:
       client_id:
         type: string
+      path:
+        items:
+          type: string
+        type: array
     type: object
   github_com_whitewolf185_SystemArchitecture_domain-service_api_domain.Route:
     properties:
       client_id:
         type: string
+      path:
+        items:
+          type: string
+        type: array
     type: object
   github_com_whitewolf185_SystemArchitecture_domain-service_pkg_custom_errors.ErrCodes:
     properties:
@@ -135,6 +147,9 @@ paths:
       - in: query
         name: client_id
         type: string
+      - in: query
+        name: destination
+        type: string
       produces:
       - application/json
       responses:
@@ -159,6 +174,9 @@ paths:
       parameters:
       - in: query
         name: client_id
+        type: string
+      - in: query
+        name: one_of_path
         type: string
       produces:
       - application/json

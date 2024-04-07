@@ -24,7 +24,8 @@ func (i Implementation) GetCompanionInfo(ctx context.Context, req *domain.GetCom
 	}
 
 	result, err := i.repo.GetCompanions(ctx, domain.Companion{
-		ClientID: req.ClientID,
+		ClientID:    req.ClientID,
+		Destination: req.Destination,
 	})
 	if err != nil {
 		switch {

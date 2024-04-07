@@ -71,7 +71,9 @@ func (dr domainRepo) DeleteCompanion(ctx context.Context, idToDelete string) err
 }
 
 func (dr domainRepo) GetCompanions(ctx context.Context, filter domain.Companion) ([]domain.Companion, error) {
-	cursor, err := dr.companionCollection.Find(ctx, filter)
+	newFilter := dr.filterConstructorRoute(filter)
+
+	cursor, err := dr.companionCollection.Find(ctx, newFilter)
 	if err != nil {
 		return nil, fmt.Errorf("cannot get companions: query truble: %w", err)
 	}
@@ -89,7 +91,9 @@ func (dr domainRepo) GetCompanions(ctx context.Context, filter domain.Companion)
 }
 
 func (dr domainRepo) GetRoutes(ctx context.Context, filter domain.Route) ([]domain.Route, error) {
-	cursor, err := dr.routeCollection.Find(ctx, filter)
+	newFilter := dr.filterConstructorRoute(filter)
+
+	cursor, err := dr.routeCollection.Find(ctx, newFilter)
 	if err != nil {
 		return nil, fmt.Errorf("cannot get routes: query truble: %w", err)
 	}
