@@ -1,0 +1,132 @@
+basePath: /api
+definitions:
+  github_com_whitewolf185_SystemArchitecture_domain-service_api_domain.CreateUserPayload:
+    properties:
+      is_driver:
+        type: boolean
+      password:
+        type: string
+      user_name:
+        type: string
+    type: object
+  github_com_whitewolf185_SystemArchitecture_domain-service_api_domain.Person:
+    properties:
+      driver:
+        type: boolean
+      id:
+        type: string
+      user_name:
+        type: string
+    type: object
+  github_com_whitewolf185_SystemArchitecture_domain-service_pkg_custom_errors.ErrCodes:
+    properties:
+      code:
+        type: integer
+      err: {}
+    type: object
+info:
+  contact: {}
+  description: swagger для api к клиентскому сервису
+  title: Client service
+  version: '@0.9'
+paths:
+  /person/CreateUser:
+    post:
+      consumes:
+      - application/json
+      description: создание пользователя. Если пользователь с таким username уже существует,
+        то будет выдана ошибка
+      operationId: client_service_create_user
+      parameters:
+      - description: Данные для создания пользователя. Поля username и password не
+          могут быть пустыми.
+        in: body
+        name: input
+        required: true
+        schema:
+          $ref: '#/definitions/github_com_whitewolf185_SystemArchitecture_domain-service_api_domain.CreateUserPayload'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/github_com_whitewolf185_SystemArchitecture_domain-service_api_domain.Person'
+        default:
+          description: ""
+          schema:
+            $ref: '#/definitions/github_com_whitewolf185_SystemArchitecture_domain-service_pkg_custom_errors.ErrCodes'
+      tags:
+      - client_service
+  /person/DeleteUserByID:
+    delete:
+      consumes:
+      - application/json
+      description: удаление пользователя пользователя
+      operationId: client_service_delete_user
+      parameters:
+      - in: query
+        name: id
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/github_com_whitewolf185_SystemArchitecture_domain-service_api_domain.Person'
+        default:
+          description: ""
+          schema:
+            $ref: '#/definitions/github_com_whitewolf185_SystemArchitecture_domain-service_pkg_custom_errors.ErrCodes'
+      tags:
+      - client_service
+  /person/GetClientByID:
+    get:
+      consumes:
+      - application/json
+      description: получение пользователя по его id
+      operationId: client_service_get_client_by_ID
+      parameters:
+      - in: query
+        name: id
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/github_com_whitewolf185_SystemArchitecture_domain-service_api_domain.Person'
+        default:
+          description: ""
+          schema:
+            $ref: '#/definitions/github_com_whitewolf185_SystemArchitecture_domain-service_pkg_custom_errors.ErrCodes'
+      tags:
+      - client_service
+  /person/SearchUserByUserName:
+    get:
+      consumes:
+      - application/json
+      description: удаление пользователя пользователя
+      operationId: client_service_swarch_user_by_user_name
+      parameters:
+      - in: query
+        name: user_name_in
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/github_com_whitewolf185_SystemArchitecture_domain-service_api_domain.Person'
+            type: array
+        default:
+          description: ""
+          schema:
+            $ref: '#/definitions/github_com_whitewolf185_SystemArchitecture_domain-service_pkg_custom_errors.ErrCodes'
+      tags:
+      - client_service
+swagger: "2.0"

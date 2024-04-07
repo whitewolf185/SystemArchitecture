@@ -1,0 +1,10 @@
+FROM golang:1.22
+
+WORKDIR /domain-service
+COPY . ./
+
+RUN apt-get update
+RUN apt-get install -y postgresql-client
+RUN go mod download
+RUN make docker-bin-deps
+# RUN make bin-deps
