@@ -1,21 +1,23 @@
 basePath: /api
 definitions:
-  github_com_whitewolf185_SystemArchitecture_domain-service_api_domain.CreateUserPayload:
+  github_com_whitewolf185_SystemArchitecture_domain-service_api_domain.Companion:
     properties:
-      is_driver:
-        type: boolean
-      password:
-        type: string
-      user_name:
+      client_id:
         type: string
     type: object
-  github_com_whitewolf185_SystemArchitecture_domain-service_api_domain.Person:
+  github_com_whitewolf185_SystemArchitecture_domain-service_api_domain.CreateCompanionRequestPayload:
     properties:
-      driver:
-        type: boolean
-      id:
+      client_id:
         type: string
-      user_name:
+    type: object
+  github_com_whitewolf185_SystemArchitecture_domain-service_api_domain.CreateRouteRequestPayload:
+    properties:
+      client_id:
+        type: string
+    type: object
+  github_com_whitewolf185_SystemArchitecture_domain-service_api_domain.Route:
+    properties:
+      client_id:
         type: string
     type: object
   github_com_whitewolf185_SystemArchitecture_domain-service_pkg_custom_errors.ErrCodes:
@@ -30,89 +32,108 @@ info:
   title: Client service
   version: '@0.9'
 paths:
-  /person/CreateUser:
+  /domain/CreateCompanion:
     post:
       consumes:
       - application/json
-      description: создание пользователя. Если пользователь с таким username уже существует,
-        то будет выдана ошибка
-      operationId: client_service_create_user
+      description: создание попутчика. У пользователя не получится создать несколько
+        сущностей попутчиков
+      operationId: domain_service_create_companion
       parameters:
-      - description: Данные для создания пользователя. Поля username и password не
-          могут быть пустыми.
+      - description: Параметры, по которым создаем информацию
         in: body
         name: input
         required: true
         schema:
-          $ref: '#/definitions/github_com_whitewolf185_SystemArchitecture_domain-service_api_domain.CreateUserPayload'
+          $ref: '#/definitions/github_com_whitewolf185_SystemArchitecture_domain-service_api_domain.CreateCompanionRequestPayload'
       produces:
       - application/json
       responses:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/github_com_whitewolf185_SystemArchitecture_domain-service_api_domain.Person'
+            $ref: '#/definitions/github_com_whitewolf185_SystemArchitecture_domain-service_api_domain.Companion'
         default:
           description: ""
           schema:
             $ref: '#/definitions/github_com_whitewolf185_SystemArchitecture_domain-service_pkg_custom_errors.ErrCodes'
       tags:
-      - client_service
-  /person/DeleteUserByID:
+      - domain_service
+  /domain/CreateRoute:
+    post:
+      consumes:
+      - application/json
+      description: создание маршрута. Водителю не получится создать несколько маршрутов.
+        Сущность маршрутов будет одна, но в нее можно будет поместить несколько пунктов
+        назначения.
+      operationId: domain_service_create_route
+      parameters:
+      - description: Параметры, по которым создаем информацию
+        in: body
+        name: input
+        required: true
+        schema:
+          $ref: '#/definitions/github_com_whitewolf185_SystemArchitecture_domain-service_api_domain.CreateRouteRequestPayload'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/github_com_whitewolf185_SystemArchitecture_domain-service_api_domain.Route'
+        default:
+          description: ""
+          schema:
+            $ref: '#/definitions/github_com_whitewolf185_SystemArchitecture_domain-service_pkg_custom_errors.ErrCodes'
+      tags:
+      - domain_service
+  /domain/DeleteCompanion:
     delete:
       consumes:
       - application/json
-      description: удаление пользователя пользователя
-      operationId: client_service_delete_user
+      description: Удаление сущности попутчика у пользователя.
+      operationId: domain_service_delete_companion
       parameters:
       - in: query
-        name: id
+        name: client_id
         type: string
       produces:
       - application/json
       responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/github_com_whitewolf185_SystemArchitecture_domain-service_api_domain.Person'
         default:
           description: ""
           schema:
             $ref: '#/definitions/github_com_whitewolf185_SystemArchitecture_domain-service_pkg_custom_errors.ErrCodes'
       tags:
-      - client_service
-  /person/GetClientByID:
-    get:
+      - domain_service
+  /domain/DeleteRoute:
+    delete:
       consumes:
       - application/json
-      description: получение пользователя по его id
-      operationId: client_service_get_client_by_ID
+      description: Удаление сущности маршрута у пользователя.
+      operationId: domain_service_delete_route
       parameters:
       - in: query
-        name: id
+        name: client_id
         type: string
       produces:
       - application/json
       responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/github_com_whitewolf185_SystemArchitecture_domain-service_api_domain.Person'
         default:
           description: ""
           schema:
             $ref: '#/definitions/github_com_whitewolf185_SystemArchitecture_domain-service_pkg_custom_errors.ErrCodes'
       tags:
-      - client_service
-  /person/SearchUserByUserName:
+      - domain_service
+  /domain/GetCompanionInfo:
     get:
       consumes:
       - application/json
-      description: удаление пользователя пользователя
-      operationId: client_service_swarch_user_by_user_name
+      description: получение попутчика по фильтрам.
+      operationId: domain_service_get_companion_info
       parameters:
       - in: query
-        name: user_name_in
+        name: client_id
         type: string
       produces:
       - application/json
@@ -121,12 +142,37 @@ paths:
           description: OK
           schema:
             items:
-              $ref: '#/definitions/github_com_whitewolf185_SystemArchitecture_domain-service_api_domain.Person'
+              $ref: '#/definitions/github_com_whitewolf185_SystemArchitecture_domain-service_api_domain.Companion'
             type: array
         default:
           description: ""
           schema:
             $ref: '#/definitions/github_com_whitewolf185_SystemArchitecture_domain-service_pkg_custom_errors.ErrCodes'
       tags:
-      - client_service
+      - domain_service
+  /domain/GetRouteInfo:
+    get:
+      consumes:
+      - application/json
+      description: получение маршрута по фильрам.
+      operationId: domain_service_get_route_info
+      parameters:
+      - in: query
+        name: client_id
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/github_com_whitewolf185_SystemArchitecture_domain-service_api_domain.Route'
+            type: array
+        default:
+          description: ""
+          schema:
+            $ref: '#/definitions/github_com_whitewolf185_SystemArchitecture_domain-service_pkg_custom_errors.ErrCodes'
+      tags:
+      - domain_service
 swagger: "2.0"

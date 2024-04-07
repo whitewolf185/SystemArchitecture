@@ -22,9 +22,9 @@ const (
 // Интерфейс со всеми ручками сервиса
 type Handlers interface {
 	// GetCompanionInfo - получение информации о попутчике
-	GetCompanionInfo(ctx context.Context, req *GetCompanionInfoRequest) (*Companion, error)
+	GetCompanionInfo(ctx context.Context, req *GetCompanionInfoRequest) ([]Companion, error)
 	// GetRouteInfo - получение информации о маршруте
-	GetRouteInfo(ctx context.Context, req *GetRouteInfoRequest) (*Route, error)
+	GetRouteInfo(ctx context.Context, req *GetRouteInfoRequest) ([]Route, error)
 	// CreateRoute - создание маршрута
 	CreateRoute(ctx context.Context, req *CreateRouteRequest) (*Route, error)
 	// CreateCompanion - создание попутчика
@@ -36,8 +36,10 @@ type Handlers interface {
 }
 
 type Companion struct {
+	ClientID string `bson:"_id" json:"client_id"`
 }
 type Route struct {
+	ClientID string `bson:"_id" json:"client_id"`
 }
 
 type GetCompanionInfoRequest struct {
@@ -63,7 +65,9 @@ type CreateCompanionRequest struct {
 }
 
 type DeleteRouteRequest struct {
+	ClientID string `json:"client_id" bson:"_id" in:"query=client_id"`
 }
 
 type DeleteCompanionRequest struct {
+	ClientID string `json:"client_id" bson:"_id" in:"query=client_id"`
 }

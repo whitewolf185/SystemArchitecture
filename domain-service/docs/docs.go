@@ -15,9 +15,9 @@ const docTemplate = `{
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
-        "/person/CreateUser": {
+        "/domain/CreateCompanion": {
             "post": {
-                "description": "создание пользователя. Если пользователь с таким username уже существует, то будет выдана ошибка",
+                "description": "создание попутчика. У пользователя не получится создать несколько сущностей попутчиков",
                 "consumes": [
                     "application/json"
                 ],
@@ -25,17 +25,17 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "client_service"
+                    "domain_service"
                 ],
-                "operationId": "client_service_create_user",
+                "operationId": "domain_service_create_companion",
                 "parameters": [
                     {
-                        "description": "Данные для создания пользователя. Поля username и password не могут быть пустыми.",
+                        "description": "Параметры, по которым создаем информацию",
                         "name": "input",
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/github_com_whitewolf185_SystemArchitecture_domain-service_api_domain.CreateUserPayload"
+                            "$ref": "#/definitions/github_com_whitewolf185_SystemArchitecture_domain-service_api_domain.CreateCompanionRequestPayload"
                         }
                     }
                 ],
@@ -43,7 +43,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/github_com_whitewolf185_SystemArchitecture_domain-service_api_domain.Person"
+                            "$ref": "#/definitions/github_com_whitewolf185_SystemArchitecture_domain-service_api_domain.Companion"
                         }
                     },
                     "default": {
@@ -55,9 +55,49 @@ const docTemplate = `{
                 }
             }
         },
-        "/person/DeleteUserByID": {
+        "/domain/CreateRoute": {
+            "post": {
+                "description": "создание маршрута. Водителю не получится создать несколько маршрутов. Сущность маршрутов будет одна, но в нее можно будет поместить несколько пунктов назначения.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "domain_service"
+                ],
+                "operationId": "domain_service_create_route",
+                "parameters": [
+                    {
+                        "description": "Параметры, по которым создаем информацию",
+                        "name": "input",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/github_com_whitewolf185_SystemArchitecture_domain-service_api_domain.CreateRouteRequestPayload"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_whitewolf185_SystemArchitecture_domain-service_api_domain.Route"
+                        }
+                    },
+                    "default": {
+                        "description": "",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_whitewolf185_SystemArchitecture_domain-service_pkg_custom_errors.ErrCodes"
+                        }
+                    }
+                }
+            }
+        },
+        "/domain/DeleteCompanion": {
             "delete": {
-                "description": "удаление пользователя пользователя",
+                "description": "Удаление сущности попутчика у пользователя.",
                 "consumes": [
                     "application/json"
                 ],
@@ -65,23 +105,17 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "client_service"
+                    "domain_service"
                 ],
-                "operationId": "client_service_delete_user",
+                "operationId": "domain_service_delete_companion",
                 "parameters": [
                     {
                         "type": "string",
-                        "name": "id",
+                        "name": "client_id",
                         "in": "query"
                     }
                 ],
                 "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/github_com_whitewolf185_SystemArchitecture_domain-service_api_domain.Person"
-                        }
-                    },
                     "default": {
                         "description": "",
                         "schema": {
@@ -91,9 +125,9 @@ const docTemplate = `{
                 }
             }
         },
-        "/person/GetClientByID": {
-            "get": {
-                "description": "получение пользователя по его id",
+        "/domain/DeleteRoute": {
+            "delete": {
+                "description": "Удаление сущности маршрута у пользователя.",
                 "consumes": [
                     "application/json"
                 ],
@@ -101,23 +135,17 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "client_service"
+                    "domain_service"
                 ],
-                "operationId": "client_service_get_client_by_ID",
+                "operationId": "domain_service_delete_route",
                 "parameters": [
                     {
                         "type": "string",
-                        "name": "id",
+                        "name": "client_id",
                         "in": "query"
                     }
                 ],
                 "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/github_com_whitewolf185_SystemArchitecture_domain-service_api_domain.Person"
-                        }
-                    },
                     "default": {
                         "description": "",
                         "schema": {
@@ -127,9 +155,9 @@ const docTemplate = `{
                 }
             }
         },
-        "/person/SearchUserByUserName": {
+        "/domain/GetCompanionInfo": {
             "get": {
-                "description": "удаление пользователя пользователя",
+                "description": "получение попутчика по фильтрам.",
                 "consumes": [
                     "application/json"
                 ],
@@ -137,13 +165,13 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "client_service"
+                    "domain_service"
                 ],
-                "operationId": "client_service_swarch_user_by_user_name",
+                "operationId": "domain_service_get_companion_info",
                 "parameters": [
                     {
                         "type": "string",
-                        "name": "user_name_in",
+                        "name": "client_id",
                         "in": "query"
                     }
                 ],
@@ -153,7 +181,46 @@ const docTemplate = `{
                         "schema": {
                             "type": "array",
                             "items": {
-                                "$ref": "#/definitions/github_com_whitewolf185_SystemArchitecture_domain-service_api_domain.Person"
+                                "$ref": "#/definitions/github_com_whitewolf185_SystemArchitecture_domain-service_api_domain.Companion"
+                            }
+                        }
+                    },
+                    "default": {
+                        "description": "",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_whitewolf185_SystemArchitecture_domain-service_pkg_custom_errors.ErrCodes"
+                        }
+                    }
+                }
+            }
+        },
+        "/domain/GetRouteInfo": {
+            "get": {
+                "description": "получение маршрута по фильрам.",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "domain_service"
+                ],
+                "operationId": "domain_service_get_route_info",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "name": "client_id",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/github_com_whitewolf185_SystemArchitecture_domain-service_api_domain.Route"
                             }
                         }
                     },
@@ -168,30 +235,34 @@ const docTemplate = `{
         }
     },
     "definitions": {
-        "github_com_whitewolf185_SystemArchitecture_domain-service_api_domain.CreateUserPayload": {
+        "github_com_whitewolf185_SystemArchitecture_domain-service_api_domain.Companion": {
             "type": "object",
             "properties": {
-                "is_driver": {
-                    "type": "boolean"
-                },
-                "password": {
-                    "type": "string"
-                },
-                "user_name": {
+                "client_id": {
                     "type": "string"
                 }
             }
         },
-        "github_com_whitewolf185_SystemArchitecture_domain-service_api_domain.Person": {
+        "github_com_whitewolf185_SystemArchitecture_domain-service_api_domain.CreateCompanionRequestPayload": {
             "type": "object",
             "properties": {
-                "driver": {
-                    "type": "boolean"
-                },
-                "id": {
+                "client_id": {
                     "type": "string"
-                },
-                "user_name": {
+                }
+            }
+        },
+        "github_com_whitewolf185_SystemArchitecture_domain-service_api_domain.CreateRouteRequestPayload": {
+            "type": "object",
+            "properties": {
+                "client_id": {
+                    "type": "string"
+                }
+            }
+        },
+        "github_com_whitewolf185_SystemArchitecture_domain-service_api_domain.Route": {
+            "type": "object",
+            "properties": {
+                "client_id": {
                     "type": "string"
                 }
             }

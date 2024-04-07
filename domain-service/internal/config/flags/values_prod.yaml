@@ -1,6 +1,6 @@
 env:
   - name: db_dsn
-    value: postgres://postgres:postgres@db:5432/client_service
+    value: mongodb://db:5432
 
   - name: listen_port
     value: 8080

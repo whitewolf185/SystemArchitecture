@@ -11,6 +11,8 @@ var (
 	// ErrUnknownType
 	ErrUnknownType = errors.New("unkown method type, add it to interface")
 
+	ErrNotFound = errors.New("not found")
+
 	// ErrUserNotFound - ошибка появляется, когда не был найден пользователь
 	ErrUserNotFound = errors.New("no users have found")
 	// ErrUserAlreadyExists - ошибка, говорящая, что этот пользователь уже существует
@@ -51,5 +53,12 @@ func CodesBadRequest(err error) error {
 	return ErrCodes{
 		Err:  err,
 		Code: http.StatusBadRequest,
+	}
+}
+
+func CodesNotImplemented(err error) error {
+	return ErrCodes{
+		Err:  err,
+		Code: http.StatusNotImplemented,
 	}
 }
