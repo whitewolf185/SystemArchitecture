@@ -1,0 +1,7 @@
+FROM golang:1.22
+
+WORKDIR /domain-service
+COPY . ./
+
+RUN apt-get update
+RUN go mod download

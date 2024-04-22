@@ -1,0 +1,8 @@
+env:
+  - name: db_dsn
+    value: mongodb://root:example@db:27017
+
+  - name: listen_port
+    value: 8080
+  - name: server_ip
+    value: localhost
