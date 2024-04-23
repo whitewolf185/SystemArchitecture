@@ -15,6 +15,8 @@ var (
 	ErrUserNotFound = errors.New("no users have found")
 	// ErrUserAlreadyExists - ошибка, говорящая, что этот пользователь уже существует
 	ErrUserAlreadyExists = errors.New("user already exists")
+	// ErrCannotLoginUser - ошибка, говорящая, что этот пользователь не смог залогироваться
+	ErrCannotLoginUser = errors.New("cannot login user")
 )
 
 type ErrCodes struct {
@@ -51,5 +53,12 @@ func CodesBadRequest(err error) error {
 	return ErrCodes{
 		Err:  err,
 		Code: http.StatusBadRequest,
+	}
+}
+
+func CodesUnauthorized(err error) error {
+	return ErrCodes{
+		Err:  err,
+		Code: http.StatusUnauthorized,
 	}
 }

@@ -35,7 +35,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/github_com_whitewolf185_SystemArchitecture_domain-service_api_domain.CreateCompanionRequestPayload"
+                            "$ref": "#/definitions/github_com_whitewolf185_SystemArchitecture_domain-service_api_domain.CreateCompanionRequestPayloadSwag"
                         }
                     }
                 ],
@@ -75,7 +75,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/github_com_whitewolf185_SystemArchitecture_domain-service_api_domain.CreateRouteRequestPayload"
+                            "$ref": "#/definitions/github_com_whitewolf185_SystemArchitecture_domain-service_api_domain.CreateRouteRequestPayloadSwag"
                         }
                     }
                 ],
@@ -171,11 +171,6 @@ const docTemplate = `{
                 "parameters": [
                     {
                         "type": "string",
-                        "name": "client_id",
-                        "in": "query"
-                    },
-                    {
-                        "type": "string",
                         "name": "destination",
                         "in": "query"
                     }
@@ -215,11 +210,6 @@ const docTemplate = `{
                 "parameters": [
                     {
                         "type": "string",
-                        "name": "client_id",
-                        "in": "query"
-                    },
-                    {
-                        "type": "string",
                         "name": "one_of_path",
                         "in": "query"
                     }
@@ -256,23 +246,17 @@ const docTemplate = `{
                 }
             }
         },
-        "github_com_whitewolf185_SystemArchitecture_domain-service_api_domain.CreateCompanionRequestPayload": {
+        "github_com_whitewolf185_SystemArchitecture_domain-service_api_domain.CreateCompanionRequestPayloadSwag": {
             "type": "object",
             "properties": {
-                "client_id": {
-                    "type": "string"
-                },
                 "destination": {
                     "type": "string"
                 }
             }
         },
-        "github_com_whitewolf185_SystemArchitecture_domain-service_api_domain.CreateRouteRequestPayload": {
+        "github_com_whitewolf185_SystemArchitecture_domain-service_api_domain.CreateRouteRequestPayloadSwag": {
             "type": "object",
             "properties": {
-                "client_id": {
-                    "type": "string"
-                },
                 "path": {
                     "type": "array",
                     "items": {

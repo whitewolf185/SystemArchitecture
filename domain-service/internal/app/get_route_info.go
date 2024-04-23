@@ -14,7 +14,7 @@ import (
 // @ID domain_service_get_route_info
 // @Accept json
 // @Produce json
-// @Param input query domain.GetRouteInfoRequest true "Параметры, по которым получаем информацию"
+// @Param input query domain.GetRouteInfoRequestSwag true "Параметры, по которым получаем информацию"
 // @Success 200 {array} domain.Route
 // @Failure default  {object}  customerrors.ErrCodes
 // @Router /domain/GetRouteInfo [get]

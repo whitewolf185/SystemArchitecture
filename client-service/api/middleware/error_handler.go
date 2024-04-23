@@ -72,7 +72,15 @@ func (em ErrHandler) checkExclusiveFiles(res interface{}, w http.ResponseWriter,
 		return
 	}
 
-	switch res.(type) {
+	switch v := res.(type) {
+	case *domain.LoginResponse:
+		cookie := http.Cookie{
+			Name:   "auth",
+			Value:  v.Token,
+			Path:   "/",
+			MaxAge: v.MaxAge,
+		}
+		http.SetCookie(w, &cookie)
 	default:
 		toSend, err := json.Marshal(res)
 		if err != nil {
@@ -110,6 +118,11 @@ func (em ErrHandler) handleTypeSwitcher(ctx context.Context, _ *http.Request, ha
 			return em.handlers.DeleteUserByID(ctx, nil)
 		}
 		return em.handlers.DeleteUserByID(ctx, inputQuery.(*domain.DeleteUserByIDRequest))
+	case domain.Login:
+		if inputQuery == nil {
+			return em.handlers.Login(ctx, nil)
+		}
+		return em.handlers.Login(ctx, inputQuery.(*domain.LoginRequest))
 	}
 	return nil, customerrors.ErrUnknownType
 }

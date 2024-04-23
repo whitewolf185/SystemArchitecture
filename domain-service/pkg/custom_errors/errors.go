@@ -62,3 +62,10 @@ func CodesNotImplemented(err error) error {
 		Code: http.StatusNotImplemented,
 	}
 }
+
+func CodesUnauthorized(err error) error {
+	return ErrCodes{
+		Err:  err,
+		Code: http.StatusUnauthorized,
+	}
+}

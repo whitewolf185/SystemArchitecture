@@ -6,3 +6,5 @@ env:
     value: 8080
   - name: server_ip
     value: localhost
+  - name: jwt_secret
+    value: 2f94834f-dcdd-4328-bdcf-77139a8ef40c

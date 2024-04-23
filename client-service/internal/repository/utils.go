@@ -28,3 +28,22 @@ func (r personRepo) selectPerson(ctx context.Context, sql string, args []interfa
 	}
 	return &result, nil
 }
+
+func (r personRepo) selectAllPerson(ctx context.Context, sql string, args []interface{}) (*model.Persons, error) {
+	var result model.Persons
+	row := r.db.QueryRow(ctx, sql, args...)
+	err := row.Scan(
+		&result.ID,
+		&result.Username,
+		&result.UserPassword,
+		&result.IsDriver,
+	)
+	if errors.Is(err, pgx.ErrNoRows) {
+		logrus.Info("selectPerson: person not found")
+		return nil, nil
+	}
+	if err != nil {
+		return nil, fmt.Errorf("cannot select person: %w", err)
+	}
+	return &result, nil
+}

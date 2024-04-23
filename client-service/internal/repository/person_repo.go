@@ -119,3 +119,25 @@ func (r personRepo) CreateUser(ctx context.Context, req model.Persons) (*model.P
 
 	return r.selectPerson(ctx, sql, args)
 }
+
+func (r personRepo) GetUserByName(ctx context.Context, req model.Persons) (*model.Persons, error) {
+	sql, args := table.Persons.SELECT(
+		table.Persons.AllColumns,
+	).WHERE(
+		table.Persons.Username.EQ(postgres.String(req.Username)),
+	).Sql()
+
+	person, err := r.selectAllPerson(ctx, sql, args)
+	if err != nil || person == nil {
+		logrus.Error("cannot find user by his name: ", err)
+		return nil, fmt.Errorf("cannot find user by his name: %w", customerrors.ErrCannotLoginUser)
+	}
+
+	decodedPass, err := base64.StdEncoding.DecodeString(person.UserPassword)
+	if err != nil {
+		return nil, fmt.Errorf("cannot decode pass: %w", err)
+	}
+
+	person.UserPassword = string(decodedPass)
+	return person, nil
+}

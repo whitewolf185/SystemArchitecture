@@ -15,7 +15,8 @@ const (
 	// ListenPort - порт, который слушает сервис
 	ListenPort = configName("listen_port")
 	// ServerIP - ip, на который swagger делает запрос
-	ServerIP = configName("server_ip")
+	ServerIP  = configName("server_ip")
+	JwtSecret = configName("jwt_secret")
 )
 
 func GetValue(cnfg configName) string {

@@ -11,6 +11,7 @@ const (
 	CreateUser           = HandlerType("CreateUser")
 	SearchUserByUserName = HandlerType("SearchUserByUserName")
 	DeleteUserByID       = HandlerType("DeleteUserByID")
+	Login                = HandlerType("Login")
 )
 
 // Интерфейс со всеми ручками сервиса
@@ -23,6 +24,8 @@ type Handlers interface {
 	SearchUserByUserName(ctx context.Context, req *SearchUserByUserNameRequest) ([]Person, error)
 	// DeleteUserByID - удаляет пользователя по его id
 	DeleteUserByID(ctx context.Context, req *DeleteUserByIDRequest) (*Person, error)
+	// Login - ручка логина. На выход отдается jwt токен
+	Login(ctx context.Context, req *LoginRequest) (*LoginResponse, error)
 }
 
 type GetPersonByIDRequest struct {
@@ -49,4 +52,16 @@ type SearchUserByUserNameRequest struct {
 
 type DeleteUserByIDRequest struct {
 	ID string `in:"query=id"`
+}
+
+type LoginPayload struct {
+	UserName string `json:"user_name"`
+	Password string `json:"password"`
+}
+type LoginRequest struct {
+	Payload *LoginPayload `json:"payload" in:"body=json"`
+}
+type LoginResponse struct {
+	Token  string `json:"token"`
+	MaxAge int    `json:"max_age"`
 }

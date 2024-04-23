@@ -21,6 +21,7 @@ type (
 		GetUserByUserNameIn(ctx context.Context, username string) ([]model.Persons, error)
 		DeleteUserByID(ctx context.Context, clientID uuid.UUID) (*model.Persons, error)
 		CreateUser(ctx context.Context, req model.Persons) (*model.Persons, error)
+		GetUserByName(ctx context.Context, req model.Persons) (*model.Persons, error)
 	}
 )
 
