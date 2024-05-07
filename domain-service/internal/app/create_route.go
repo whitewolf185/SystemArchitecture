@@ -13,7 +13,7 @@ import (
 // @ID domain_service_create_route
 // @Accept json
 // @Produce json
-// @Param input body domain.CreateRouteRequestPayload true "Параметры, по которым создаем информацию"
+// @Param input body domain.CreateRouteRequestPayloadSwag true "Параметры, по которым создаем информацию"
 // @Success 200 {object} domain.Route
 // @Failure default  {object}  customerrors.ErrCodes
 // @Router /domain/CreateRoute [post]

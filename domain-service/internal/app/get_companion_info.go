@@ -14,7 +14,7 @@ import (
 // @ID domain_service_get_companion_info
 // @Accept json
 // @Produce json
-// @Param input query domain.GetCompanionInfoRequest true "Параметры, по которым получаем информацию"
+// @Param input query domain.GetCompanionInfoRequestSwag true "Параметры, по которым получаем информацию"
 // @Success 200 {array} domain.Companion
 // @Failure default  {object}  customerrors.ErrCodes
 // @Router /domain/GetCompanionInfo [get]

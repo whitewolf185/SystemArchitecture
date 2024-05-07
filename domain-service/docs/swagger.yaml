@@ -7,17 +7,13 @@ definitions:
       destination:
         type: string
     type: object
-  github_com_whitewolf185_SystemArchitecture_domain-service_api_domain.CreateCompanionRequestPayload:
+  github_com_whitewolf185_SystemArchitecture_domain-service_api_domain.CreateCompanionRequestPayloadSwag:
     properties:
-      client_id:
-        type: string
       destination:
         type: string
     type: object
-  github_com_whitewolf185_SystemArchitecture_domain-service_api_domain.CreateRouteRequestPayload:
+  github_com_whitewolf185_SystemArchitecture_domain-service_api_domain.CreateRouteRequestPayloadSwag:
     properties:
-      client_id:
-        type: string
       path:
         items:
           type: string
@@ -57,7 +53,7 @@ paths:
         name: input
         required: true
         schema:
-          $ref: '#/definitions/github_com_whitewolf185_SystemArchitecture_domain-service_api_domain.CreateCompanionRequestPayload'
+          $ref: '#/definitions/github_com_whitewolf185_SystemArchitecture_domain-service_api_domain.CreateCompanionRequestPayloadSwag'
       produces:
       - application/json
       responses:
@@ -85,7 +81,7 @@ paths:
         name: input
         required: true
         schema:
-          $ref: '#/definitions/github_com_whitewolf185_SystemArchitecture_domain-service_api_domain.CreateRouteRequestPayload'
+          $ref: '#/definitions/github_com_whitewolf185_SystemArchitecture_domain-service_api_domain.CreateRouteRequestPayloadSwag'
       produces:
       - application/json
       responses:
@@ -145,9 +141,6 @@ paths:
       operationId: domain_service_get_companion_info
       parameters:
       - in: query
-        name: client_id
-        type: string
-      - in: query
         name: destination
         type: string
       produces:
@@ -172,9 +165,6 @@ paths:
       description: получение маршрута по фильрам.
       operationId: domain_service_get_route_info
       parameters:
-      - in: query
-        name: client_id
-        type: string
       - in: query
         name: one_of_path
         type: string

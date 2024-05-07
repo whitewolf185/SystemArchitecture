@@ -13,7 +13,7 @@ import (
 // @ID domain_service_create_companion
 // @Accept json
 // @Produce json
-// @Param input body domain.CreateCompanionRequestPayload true "Параметры, по которым создаем информацию"
+// @Param input body domain.CreateCompanionRequestPayloadSwag true "Параметры, по которым создаем информацию"
 // @Success 200 {object} domain.Companion
 // @Failure default  {object}  customerrors.ErrCodes
 // @Router /domain/CreateCompanion [post]
