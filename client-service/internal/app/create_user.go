@@ -20,7 +20,7 @@ import (
 // @Param input body domain.CreateUserPayload true "Данные для создания пользователя. Поля username и password не могут быть пустыми."
 // @Success 200 {object} domain.Person
 // @Failure default  {object}  customerrors.ErrCodes
-// @Router /person/CreateUser [post]
+// @Router /gateway/CreateUser [post]
 func (i Implementation) CreateUser(ctx context.Context, req *domain.CreateUserRequest) (*domain.Person, error) {
 	if req == nil || req.Payload == nil || req.Payload.UserName == "" || req.Payload.Password == "" {
 		return nil, customerrors.CodesBadRequest(fmt.Errorf("username or password cannot be empty"))

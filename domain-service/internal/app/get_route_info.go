@@ -17,7 +17,7 @@ import (
 // @Param input query domain.GetRouteInfoRequestSwag true "Параметры, по которым получаем информацию"
 // @Success 200 {array} domain.Route
 // @Failure default  {object}  customerrors.ErrCodes
-// @Router /domain/GetRouteInfo [get]
+// @Router /gateway/GetRouteInfo [get]
 func (i Implementation) GetRouteInfo(ctx context.Context, req *domain.GetRouteInfoRequest) ([]domain.Route, error) {
 	if req == nil {
 		return nil, customerrors.CodesBadRequest(fmt.Errorf("request cannot be empty"))

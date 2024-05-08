@@ -16,7 +16,7 @@ import (
 // @Produce json
 // @Param input query domain.DeleteRouteRequest true "Параметры, по которым удаляем информацию"
 // @Failure default  {object}  customerrors.ErrCodes
-// @Router /domain/DeleteRoute [delete]
+// @Router /gateway/DeleteRoute [delete]
 func (i Implementation) DeleteRoute(ctx context.Context, req *domain.DeleteRouteRequest) error {
 	if req == nil {
 		return customerrors.CodesBadRequest(fmt.Errorf("request cannot be empty"))

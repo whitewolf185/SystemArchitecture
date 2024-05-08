@@ -3,7 +3,7 @@ env:
     value: mongodb://root:example@db:27017
 
   - name: listen_port
-    value: 8080
+    value: 8082
   - name: server_ip
     value: localhost
   - name: jwt_secret

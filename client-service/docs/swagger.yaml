@@ -37,7 +37,7 @@ info:
   title: Client service
   version: '@0.9'
 paths:
-  /person/CreateUser:
+  /gateway/CreateUser:
     post:
       consumes:
       - application/json
@@ -65,7 +65,7 @@ paths:
             $ref: '#/definitions/github_com_whitewolf185_SystemArchitecture_client-service_pkg_custom_errors.ErrCodes'
       tags:
       - client_service
-  /person/DeleteUserByID:
+  /gateway/DeleteUserByID:
     delete:
       consumes:
       - application/json
@@ -88,7 +88,7 @@ paths:
             $ref: '#/definitions/github_com_whitewolf185_SystemArchitecture_client-service_pkg_custom_errors.ErrCodes'
       tags:
       - client_service
-  /person/GetClientByID:
+  /gateway/GetClientByID:
     get:
       consumes:
       - application/json
@@ -111,29 +111,7 @@ paths:
             $ref: '#/definitions/github_com_whitewolf185_SystemArchitecture_client-service_pkg_custom_errors.ErrCodes'
       tags:
       - client_service
-  /person/Login:
-    post:
-      consumes:
-      - application/json
-      description: Login пользователя
-      operationId: client_service_login
-      parameters:
-      - description: Данные пользователя. Поля username и password не могут быть пустыми.
-        in: body
-        name: input
-        required: true
-        schema:
-          $ref: '#/definitions/github_com_whitewolf185_SystemArchitecture_client-service_api_domain.LoginPayload'
-      produces:
-      - application/json
-      responses:
-        default:
-          description: ""
-          schema:
-            $ref: '#/definitions/github_com_whitewolf185_SystemArchitecture_client-service_pkg_custom_errors.ErrCodes'
-      tags:
-      - client_service
-  /person/SearchUserByUserName:
+  /gateway/SearchUserByUserName:
     get:
       consumes:
       - application/json
@@ -152,6 +130,28 @@ paths:
             items:
               $ref: '#/definitions/github_com_whitewolf185_SystemArchitecture_client-service_api_domain.Person'
             type: array
+        default:
+          description: ""
+          schema:
+            $ref: '#/definitions/github_com_whitewolf185_SystemArchitecture_client-service_pkg_custom_errors.ErrCodes'
+      tags:
+      - client_service
+  /person/Login:
+    post:
+      consumes:
+      - application/json
+      description: Login пользователя
+      operationId: client_service_login
+      parameters:
+      - description: Данные пользователя. Поля username и password не могут быть пустыми.
+        in: body
+        name: input
+        required: true
+        schema:
+          $ref: '#/definitions/github_com_whitewolf185_SystemArchitecture_client-service_api_domain.LoginPayload'
+      produces:
+      - application/json
+      responses:
         default:
           description: ""
           schema:

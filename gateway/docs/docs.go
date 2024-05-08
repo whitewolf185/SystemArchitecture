@@ -15,6 +15,40 @@ const docTemplate = `{
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
+        "/gateway/Login": {
+            "post": {
+                "description": "Login пользователя",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "client_service"
+                ],
+                "operationId": "client_service_login",
+                "parameters": [
+                    {
+                        "description": "Данные пользователя. Поля username и password не могут быть пустыми.",
+                        "name": "input",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/github_com_whitewolf185_SystemArchitecture_client-service_api_domain.LoginPayload"
+                        }
+                    }
+                ],
+                "responses": {
+                    "default": {
+                        "description": "",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_whitewolf185_SystemArchitecture_client-service_pkg_custom_errors.ErrCodes"
+                        }
+                    }
+                }
+            }
+        },
         "/gateway/CreateCompanion": {
             "post": {
                 "description": "создание попутчика. У пользователя не получится создать несколько сущностей попутчиков",
@@ -242,6 +276,17 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "destination": {
+                    "type": "string"
+                }
+            }
+        },
+        "github_com_whitewolf185_SystemArchitecture_client-service_api_domain.LoginPayload": {
+            "type": "object",
+            "properties": {
+                "password": {
+                    "type": "string"
+                },
+                "user_name": {
                     "type": "string"
                 }
             }

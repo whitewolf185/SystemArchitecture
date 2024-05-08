@@ -16,7 +16,7 @@ import (
 // @Param input body domain.CreateRouteRequestPayloadSwag true "Параметры, по которым создаем информацию"
 // @Success 200 {object} domain.Route
 // @Failure default  {object}  customerrors.ErrCodes
-// @Router /domain/CreateRoute [post]
+// @Router /gateway/CreateRoute [post]
 func (i Implementation) CreateRoute(ctx context.Context, req *domain.CreateRouteRequest) (*domain.Route, error) {
 	if req == nil || req.Payload == nil {
 		return nil, customerrors.CodesBadRequest(fmt.Errorf("request cannot be empty"))
