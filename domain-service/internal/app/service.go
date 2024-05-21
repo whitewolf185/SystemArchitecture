@@ -8,7 +8,7 @@ import (
 
 // @title Client service
 // @version @0.9
-// @description swagger для api к клиентскому сервису
+// @description swagger для api gateway
 
 // @basePath /api
 

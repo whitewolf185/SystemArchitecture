@@ -16,7 +16,7 @@ import (
 // @Param input body domain.CreateCompanionRequestPayloadSwag true "Параметры, по которым создаем информацию"
 // @Success 200 {object} domain.Companion
 // @Failure default  {object}  customerrors.ErrCodes
-// @Router /domain/CreateCompanion [post]
+// @Router /gateway/CreateCompanion [post]
 func (i Implementation) CreateCompanion(ctx context.Context, req *domain.CreateCompanionRequest) (*domain.Companion, error) {
 	if req == nil || req.Payload == nil {
 		return nil, customerrors.CodesBadRequest(fmt.Errorf("request cannot be empty"))

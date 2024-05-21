@@ -17,7 +17,7 @@ import (
 // @Param input query domain.GetCompanionInfoRequestSwag true "Параметры, по которым получаем информацию"
 // @Success 200 {array} domain.Companion
 // @Failure default  {object}  customerrors.ErrCodes
-// @Router /domain/GetCompanionInfo [get]
+// @Router /gateway/GetCompanionInfo [get]
 func (i Implementation) GetCompanionInfo(ctx context.Context, req *domain.GetCompanionInfoRequest) ([]domain.Companion, error) {
 	if req == nil {
 		return nil, customerrors.CodesBadRequest(fmt.Errorf("request cannot be empty"))

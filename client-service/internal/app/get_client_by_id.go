@@ -19,7 +19,7 @@ import (
 // @Param input query domain.GetPersonByIDRequest true "ID клиента"
 // @Success 200 {object} domain.Person
 // @Failure default  {object}  customerrors.ErrCodes
-// @Router /person/GetClientByID [get]
+// @Router /gateway/GetClientByID [get]
 func (i Implementation) GetClientByID(ctx context.Context, req *domain.GetPersonByIDRequest) (*domain.Person, error) {
 	if req == nil {
 		return nil, customerrors.CodesBadRequest(fmt.Errorf("empty request"))

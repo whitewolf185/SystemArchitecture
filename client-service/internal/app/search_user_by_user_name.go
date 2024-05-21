@@ -18,7 +18,7 @@ import (
 // @Param input query domain.SearchUserByUserNameRequest true "Запрос на поиск пользователя по его нику"
 // @Success 200 {array} domain.Person
 // @Failure default  {object}  customerrors.ErrCodes
-// @Router /person/SearchUserByUserName [get]
+// @Router /gateway/SearchUserByUserName [get]
 func (i Implementation) SearchUserByUserName(ctx context.Context, req *domain.SearchUserByUserNameRequest) ([]domain.Person, error) {
 	if req == nil || req.UserNameIn == "" {
 		return nil, customerrors.CodesBadRequest(fmt.Errorf("cannot select persons with empty username"))

@@ -3,16 +3,13 @@ package middleware
 import (
 	"context"
 	"encoding/json"
-	"fmt"
 	"net/http"
 	"time"
 
 	"github.com/ggicci/httpin"
-	"github.com/golang-jwt/jwt/v4"
 	"github.com/pkg/errors"
 	"github.com/sirupsen/logrus"
 	"github.com/whitewolf185/SystemArchitecture/domain-service/api/domain"
-	"github.com/whitewolf185/SystemArchitecture/domain-service/internal/config"
 	customerrors "github.com/whitewolf185/SystemArchitecture/domain-service/pkg/custom_errors"
 )
 
@@ -33,7 +30,6 @@ func NewErrorHandler(handlers domain.Handlers) ErrHandler {
 // ErrMiddleware - функция-хендлер. Принимает в себя тип ручки, которая используется в хендлере
 func (em ErrHandler) ErrMiddleware(handleType domain.HandlerType) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		w.Header().Add("Method", handleType.String())
 		logrus.Infof("method: %v", handleType)
 		ctx, cancel := context.WithTimeout(r.Context(), contextDeadline)
 		defer cancel()
@@ -90,31 +86,7 @@ func (em ErrHandler) checkExclusiveFiles(res interface{}, w http.ResponseWriter,
 	w.WriteHeader(http.StatusOK)
 }
 
-type jwtClaims struct {
-	ID string `json:"id"`
-	jwt.RegisteredClaims
-}
-
-func (em ErrHandler) handleTypeSwitcher(ctx context.Context, req *http.Request, handleType domain.HandlerType) (interface{}, error) {
-	c, err := req.Cookie("auth")
-	if err != nil {
-		return nil, customerrors.CodesUnauthorized(fmt.Errorf("cookie err: %w", err))
-	}
-	var claims jwtClaims
-	token, err := jwt.ParseWithClaims(c.Value, &claims, func(token *jwt.Token) (interface{}, error) {
-		return []byte(config.GetValue(config.JwtSecret)), nil
-	})
-	if err != nil {
-		switch {
-		case errors.Is(err, jwt.ErrSignatureInvalid):
-			return nil, customerrors.CodesUnauthorized(fmt.Errorf("wrong signature: %w", err))
-		}
-		return nil, customerrors.CodesBadRequest(fmt.Errorf("empty cookie"))
-	}
-	if !token.Valid {
-		return nil, customerrors.CodesUnauthorized(fmt.Errorf("token is not valid"))
-	}
-
+func (em ErrHandler) handleTypeSwitcher(ctx context.Context, _ *http.Request, handleType domain.HandlerType) (interface{}, error) {
 	inputQuery := ctx.Value(httpin.Input)
 	switch handleType {
 	case domain.GetCompanionInfo:
@@ -122,28 +94,24 @@ func (em ErrHandler) handleTypeSwitcher(ctx context.Context, req *http.Request, 
 			return em.handlers.GetCompanionInfo(ctx, nil)
 		}
 		toInput := inputQuery.(*domain.GetCompanionInfoRequest)
-		toInput.ClientID = claims.ID
 		return em.handlers.GetCompanionInfo(ctx, toInput)
 	case domain.GetRouteInfo:
 		if inputQuery == nil {
 			return em.handlers.GetRouteInfo(ctx, nil)
 		}
 		toInput := inputQuery.(*domain.GetRouteInfoRequest)
-		toInput.ClientID = claims.ID
 		return em.handlers.GetRouteInfo(ctx, toInput)
 	case domain.CreateRoute:
 		if inputQuery == nil {
 			return em.handlers.CreateRoute(ctx, nil)
 		}
 		toInput := inputQuery.(*domain.CreateRouteRequest)
-		toInput.Payload.ClientID = claims.ID
 		return em.handlers.CreateRoute(ctx, toInput)
 	case domain.CreateCompanion:
 		if inputQuery == nil {
 			return em.handlers.CreateCompanion(ctx, nil)
 		}
 		toInput := inputQuery.(*domain.CreateCompanionRequest)
-		toInput.Payload.ClientID = claims.ID
 		return em.handlers.CreateCompanion(ctx, toInput)
 	case domain.DeleteRoute:
 		if inputQuery == nil {

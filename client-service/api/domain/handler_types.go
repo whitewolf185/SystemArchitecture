@@ -4,14 +4,15 @@ import (
 	"context"
 )
 
-type HandlerType string
+type HandlerType int
 
+//go:generate stringer -type=HandlerType -output=./handler_types_string.go
 const (
-	GetClientByID        = HandlerType("GetClientByID")
-	CreateUser           = HandlerType("CreateUser")
-	SearchUserByUserName = HandlerType("SearchUserByUserName")
-	DeleteUserByID       = HandlerType("DeleteUserByID")
-	Login                = HandlerType("Login")
+	GetClientByID HandlerType = iota
+	CreateUser
+	SearchUserByUserName
+	DeleteUserByID
+	Login
 )
 
 // Интерфейс со всеми ручками сервиса

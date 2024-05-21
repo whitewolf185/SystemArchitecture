@@ -18,7 +18,7 @@ import (
 // @Param input query domain.DeleteUserByIDRequest true "Запрос на удаление пользователя"
 // @Success 200 {object} domain.Person
 // @Failure default  {object}  customerrors.ErrCodes
-// @Router /person/DeleteUserByID [delete]
+// @Router /gateway/DeleteUserByID [delete]
 func (i Implementation) DeleteUserByID(ctx context.Context, req *domain.DeleteUserByIDRequest) (*domain.Person, error) {
 	if req == nil {
 		return nil, customerrors.CodesBadRequest(fmt.Errorf("empty request"))

@@ -15,7 +15,7 @@ const docTemplate = `{
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
-        "/person/CreateUser": {
+        "/gateway/CreateUser": {
             "post": {
                 "description": "создание пользователя. Если пользователь с таким username уже существует, то будет выдана ошибка",
                 "consumes": [
@@ -55,7 +55,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/person/DeleteUserByID": {
+        "/gateway/DeleteUserByID": {
             "delete": {
                 "description": "удаление пользователя пользователя",
                 "consumes": [
@@ -91,7 +91,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/person/GetClientByID": {
+        "/gateway/GetClientByID": {
             "get": {
                 "description": "получение пользователя по его id",
                 "consumes": [
@@ -116,6 +116,45 @@ const docTemplate = `{
                         "description": "OK",
                         "schema": {
                             "$ref": "#/definitions/github_com_whitewolf185_SystemArchitecture_client-service_api_domain.Person"
+                        }
+                    },
+                    "default": {
+                        "description": "",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_whitewolf185_SystemArchitecture_client-service_pkg_custom_errors.ErrCodes"
+                        }
+                    }
+                }
+            }
+        },
+        "/gateway/SearchUserByUserName": {
+            "get": {
+                "description": "удаление пользователя пользователя",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "client_service"
+                ],
+                "operationId": "client_service_swarch_user_by_user_name",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "name": "user_name_in",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/github_com_whitewolf185_SystemArchitecture_client-service_api_domain.Person"
+                            }
                         }
                     },
                     "default": {
@@ -152,45 +191,6 @@ const docTemplate = `{
                     }
                 ],
                 "responses": {
-                    "default": {
-                        "description": "",
-                        "schema": {
-                            "$ref": "#/definitions/github_com_whitewolf185_SystemArchitecture_client-service_pkg_custom_errors.ErrCodes"
-                        }
-                    }
-                }
-            }
-        },
-        "/person/SearchUserByUserName": {
-            "get": {
-                "description": "удаление пользователя пользователя",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "client_service"
-                ],
-                "operationId": "client_service_swarch_user_by_user_name",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "name": "user_name_in",
-                        "in": "query"
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/github_com_whitewolf185_SystemArchitecture_client-service_api_domain.Person"
-                            }
-                        }
-                    },
                     "default": {
                         "description": "",
                         "schema": {

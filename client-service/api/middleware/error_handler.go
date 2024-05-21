@@ -30,7 +30,6 @@ func NewErrorHandler(handlers domain.Handlers) ErrHandler {
 // ErrMiddleware - функция-хендлер. Принимает в себя тип ручки, которая используется в хендлере
 func (em ErrHandler) ErrMiddleware(handleType domain.HandlerType) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		w.Header().Add("Method", string(handleType))
 		logrus.Infof("method: %v", handleType)
 		ctx, cancel := context.WithTimeout(r.Context(), contextDeadline)
 		defer cancel()
@@ -72,15 +71,7 @@ func (em ErrHandler) checkExclusiveFiles(res interface{}, w http.ResponseWriter,
 		return
 	}
 
-	switch v := res.(type) {
-	case *domain.LoginResponse:
-		cookie := http.Cookie{
-			Name:   "auth",
-			Value:  v.Token,
-			Path:   "/",
-			MaxAge: v.MaxAge,
-		}
-		http.SetCookie(w, &cookie)
+	switch res.(type) {
 	default:
 		toSend, err := json.Marshal(res)
 		if err != nil {

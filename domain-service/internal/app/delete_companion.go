@@ -16,7 +16,7 @@ import (
 // @Produce json
 // @Param input query domain.DeleteCompanionRequest true "Параметры, по которым удаляем информацию"
 // @Failure default  {object}  customerrors.ErrCodes
-// @Router /domain/DeleteCompanion [delete]
+// @Router /gateway/DeleteCompanion [delete]
 func (i Implementation) DeleteCompanion(ctx context.Context, req *domain.DeleteCompanionRequest) error {
 	if req == nil {
 		return customerrors.CodesBadRequest(fmt.Errorf("request cannot be empty"))
