@@ -43,7 +43,7 @@ const docTemplate = `{
                     "default": {
                         "description": "",
                         "schema": {
-                            "$ref": "#/definitions/github_com_whitewolf185_SystemArchitecture_client-service_pkg_custom_errors.ErrCodes"
+                            "$ref": "#/definitions/github_com_whitewolf185_SystemArchitecture_domain-service_pkg_custom_errors.ErrCodes"
                         }
                     }
                 }
@@ -81,7 +81,7 @@ const docTemplate = `{
                         }
                     },
                     "default": {
-                        "description": "",
+                        "description": "Ошибка",
                         "schema": {
                             "$ref": "#/definitions/github_com_whitewolf185_SystemArchitecture_domain-service_pkg_custom_errors.ErrCodes"
                         }

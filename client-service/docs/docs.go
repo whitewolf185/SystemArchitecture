@@ -15,7 +15,7 @@ const docTemplate = `{
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
-        "/gateway/CreateUser": {
+        "/person/CreateUser": {
             "post": {
                 "description": "создание пользователя. Если пользователь с таким username уже существует, то будет выдана ошибка",
                 "consumes": [
@@ -55,7 +55,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/gateway/DeleteUserByID": {
+        "/person/DeleteUserByID": {
             "delete": {
                 "description": "удаление пользователя пользователя",
                 "consumes": [
@@ -91,7 +91,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/gateway/GetClientByID": {
+        "/person/GetClientByID": {
             "get": {
                 "description": "получение пользователя по его id",
                 "consumes": [
@@ -127,7 +127,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/gateway/SearchUserByUserName": {
+        "/person/SearchUserByUserName": {
             "get": {
                 "description": "удаление пользователя пользователя",
                 "consumes": [
