@@ -4,13 +4,16 @@ import (
 	"bytes"
 	"context"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"io"
 	"net/http"
 	"net/url"
 	"reflect"
 	"strings"
+	"time"
 
+	"github.com/redis/go-redis/v9"
 	"github.com/sirupsen/logrus"
 	domain_domain "github.com/whitewolf185/SystemArchitecture/domain-service/api/domain"
 	"github.com/whitewolf185/SystemArchitecture/gateway/internal/config"
@@ -21,13 +24,16 @@ type balancer struct {
 	apiName string
 	client  http.Client
 	apiHost string
+
+	keydbClient *redis.Client
 }
 
-func New(apiName string, servicePort string) balancer {
+func New(apiName string, servicePort string, keydbClient *redis.Client) balancer {
 	return balancer{
-		apiName: apiName,
-		client:  http.Client{},
-		apiHost: fmt.Sprintf("%s:%s", config.GetValue(config.DomainServiceHost), config.GetValue(config.DomainServicePort)),
+		apiName:     apiName,
+		client:      http.Client{},
+		apiHost:     fmt.Sprintf("%s:%s", config.GetValue(config.DomainServiceHost), config.GetValue(config.DomainServicePort)),
+		keydbClient: keydbClient,
 	}
 }
 
@@ -49,9 +55,18 @@ func (b balancer) GetCompanionInfo(ctx context.Context, req *domain_domain.GetCo
 		return nil, fmt.Errorf("cannot build a request: %w", err)
 	}
 
+	keydbKey := fmt.Sprintf("%s|%s", u.Path, req.ClientID)
 	resBody, err := b.requestSender(request)
 	if err != nil {
-		return nil, err
+		if errors.As(err, &customerrors.ErrCodes{}) {
+			return nil, err
+		}
+		keydbResult, keydbErr := b.keydbClient.Get(ctx, keydbKey).Result()
+		if keydbErr != nil {
+			return nil, fmt.Errorf("keydb error: %s; service error: %w", keydbErr.Error(), err)
+		}
+		resBody = []byte(keydbResult)
+		logrus.Info("the result was used by keydb")
 	}
 
 	var result []domain_domain.Companion
@@ -60,6 +75,7 @@ func (b balancer) GetCompanionInfo(ctx context.Context, req *domain_domain.GetCo
 		return nil, fmt.Errorf("gateway[GetCompanionInfo]: cannot unmarshal response: %w", err)
 	}
 	logrus.Info(result)
+	b.setValueToKeydb(ctx, keydbKey, result)
 	return result, nil
 }
 
@@ -81,9 +97,18 @@ func (b balancer) GetRouteInfo(ctx context.Context, req *domain_domain.GetRouteI
 		return nil, fmt.Errorf("cannot build a request: %w", err)
 	}
 
+	keydbKey := fmt.Sprintf("%s|%s|%s", u.Path, req.ClientID, req.OneOfPath)
 	resBody, err := b.requestSender(request)
 	if err != nil {
-		return nil, err
+		if errors.As(err, &customerrors.ErrCodes{}) {
+			return nil, err
+		}
+		keydbResult, keydbErr := b.keydbClient.Get(ctx, keydbKey).Result()
+		if keydbErr != nil {
+			return nil, fmt.Errorf("keydb error: %s; service error: %w", keydbErr.Error(), err)
+		}
+		resBody = []byte(keydbResult)
+		logrus.Info("the result was used by keydb")
 	}
 
 	var result []domain_domain.Route
@@ -92,6 +117,7 @@ func (b balancer) GetRouteInfo(ctx context.Context, req *domain_domain.GetRouteI
 		return nil, fmt.Errorf("gateway[GetRouteInfo]: cannot unmarshal response: %w", err)
 	}
 	logrus.Info(result)
+	b.setValueToKeydb(ctx, keydbKey, result)
 	return result, nil
 }
 
@@ -265,4 +291,16 @@ func (b balancer) requestSender(request *http.Request) ([]byte, error) {
 	logrus.Info(string(resBody))
 
 	return resBody, nil
+}
+
+func (b balancer) setValueToKeydb(ctx context.Context, request string, response any) error {
+	marshaledBinary, err := json.Marshal(response)
+	if err != nil {
+		return fmt.Errorf("cannot marshal response while inserting into key-db: %w", err)
+	}
+	err = b.keydbClient.Set(ctx, request, marshaledBinary, time.Hour).Err()
+	if err != nil {
+		return fmt.Errorf("cannot add response into redis: %w", err)
+	}
+	return nil
 }
