@@ -4,7 +4,7 @@ GOOSE_DRIVER=postgres
 DBSTRING="user=postgres dbname=$(LOCAL_DB) sslmode=disable"
 LOCAL_DB_DSN="postgres://postgres:qwerty@localhost:5432/$(LOCAL_DB)?sslmode=disable"
 
-DOCKER_DB_DSN:=postgres://postgres:postgres@db:5432/$(LOCAL_DB)
+DOCKER_DB_DSN:=postgres://postgres:postgres@postgres-db:5432/$(LOCAL_DB)
 
 bin-deps:
 	@echo -- 🛠️ build local depencies --

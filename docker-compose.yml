@@ -1,9 +1,99 @@
 version: "3"
 
+networks:
+  internal:
+    driver: bridge
+
 services:
-  structurizr:
-    image: structurizr/lite
+  # structurizr:
+  #   image: structurizr/lite
+  #   ports:
+  #     - 8080:8080
+  #   volumes:
+  #     - ./docs:/usr/local/structurizr:z
+  gateway:
+    build: ./
+    environment:
+      ENV_FILE_NAME: values_prod.yaml
     ports:
-      - 8080:8080
+      - "8080:8080"
+    networks:
+      - internal
+    entrypoint: ["make", "run-docker"]
+    depends_on:
+     - keydb
+    deploy:
+      restart_policy:
+        condition: on-failure
+        delay: 15s
+        max_attempts: 5
+        window: 15s
+  keydb:
+    image: eqalpha/keydb
+    restart: always
+    ports:
+      - '6379:6379'
+    networks:
+      - internal
+  mongo-db:
+    image: mongo
+    restart: always
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: example
+    ports:
+      - '27016:27017'
+    networks:
+      - internal
     volumes:
-      - ./docs:/usr/local/structurizr:z
+      - ./database:/data/db
+    healthcheck:
+      test: echo 'db.runCommand("ping").ok' | mongosh localhost:27017/test --quiet
+  domain-service:
+    build: ./domain-service
+    environment:
+      ENV_FILE_NAME: values_prod.yaml
+    ports:
+      - "8082:8082"
+    networks:
+      - internal
+    depends_on:
+      - mongo-db
+    entrypoint: ["make", "run"]
+    deploy:
+      restart_policy:
+        condition: on-failure
+        delay: 15s
+        max_attempts: 5
+        window: 15s
+  postgres-db:
+    image: postgres
+    restart: always
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_DB=client_service
+    ports:
+      - '5433:5432'
+    networks:
+      - internal
+    volumes:
+      - ./database:/var/lib/postgresql/data
+  client-service:
+    build: ./client-service
+    environment:
+      ENV_FILE_NAME: values_prod.yaml
+      PGPASSWORD: postgres
+    ports:
+      - "8081:8081"
+    networks:
+      - internal
+    depends_on:
+      - postgres-db
+    entrypoint: ["make", "run"]
+    deploy:
+      restart_policy:
+        condition: on-failure
+        delay: 15s
+        max_attempts: 5
+        window: 15s

@@ -16,25 +16,83 @@ import (
 	"github.com/redis/go-redis/v9"
 	"github.com/sirupsen/logrus"
 	domain_domain "github.com/whitewolf185/SystemArchitecture/domain-service/api/domain"
+	"github.com/whitewolf185/SystemArchitecture/gateway/api/http_balancer/circuit_breaker"
 	"github.com/whitewolf185/SystemArchitecture/gateway/internal/config"
 	customerrors "github.com/whitewolf185/SystemArchitecture/gateway/pkg/custom_errors"
 )
+
+type CircuitBreaker interface {
+	GetStatus() circuit_breaker.CircuitStatus
+	CountError()
+	CountHalfOpenedRequests() int
+}
 
 type balancer struct {
 	apiName string
 	client  http.Client
 	apiHost string
 
-	keydbClient *redis.Client
+	circuidBreaker CircuitBreaker
+	keydbClient    *redis.Client
 }
 
-func New(apiName string, servicePort string, keydbClient *redis.Client) balancer {
+func New(apiName string, servicePort string, keydbClient *redis.Client, circuidBreaker CircuitBreaker) balancer {
 	return balancer{
-		apiName:     apiName,
-		client:      http.Client{},
-		apiHost:     fmt.Sprintf("%s:%s", config.GetValue(config.DomainServiceHost), config.GetValue(config.DomainServicePort)),
-		keydbClient: keydbClient,
+		apiName:        apiName,
+		client:         http.Client{},
+		apiHost:        fmt.Sprintf("%s:%s", config.GetValue(config.DomainServiceHost), config.GetValue(config.DomainServicePort)),
+		keydbClient:    keydbClient,
+		circuidBreaker: circuidBreaker,
 	}
+}
+
+func (b balancer) circuidController(ctx context.Context, request *http.Request, keydbKey string) ([]byte, error) {
+	var (
+		resBody []byte
+		err     error
+	)
+	circuidStatus := b.circuidBreaker.GetStatus()
+	if circuidStatus == circuit_breaker.Opened {
+		keydbResult, keydbErr := b.keydbClient.Get(ctx, keydbKey).Result()
+		if keydbErr != nil {
+			return nil, fmt.Errorf("keydb error: %s; service error: %w", keydbErr.Error(), err)
+		}
+		resBody = []byte(keydbResult)
+		logrus.Info("the result was used by keydb")
+	}
+	if circuidStatus == circuit_breaker.Closed {
+		resBody, err = b.requestSender(request)
+		if err != nil {
+			if errors.As(err, &customerrors.ErrCodes{}) {
+				return nil, err
+			}
+			b.circuidBreaker.CountError()
+			return nil, err
+		}
+	}
+
+	if circuidStatus == circuit_breaker.HalfOpened {
+		requestsCounter := b.circuidBreaker.CountHalfOpenedRequests()
+		if requestsCounter%2 == 0 {
+			resBody, err = b.requestSender(request)
+			if err != nil {
+				if errors.As(err, &customerrors.ErrCodes{}) {
+					return nil, err
+				}
+				b.circuidBreaker.CountError()
+				return nil, err
+			}
+		} else {
+			keydbResult, keydbErr := b.keydbClient.Get(ctx, keydbKey).Result()
+			if keydbErr != nil {
+				return nil, fmt.Errorf("keydb error: %s; service error: %w", keydbErr.Error(), err)
+			}
+			resBody = []byte(keydbResult)
+			logrus.Info("the result was used by keydb")
+		}
+	}
+
+	return resBody, nil
 }
 
 // GetCompanionInfo - получение информации о попутчике
@@ -56,17 +114,9 @@ func (b balancer) GetCompanionInfo(ctx context.Context, req *domain_domain.GetCo
 	}
 
 	keydbKey := fmt.Sprintf("%s|%s", u.Path, req.ClientID)
-	resBody, err := b.requestSender(request)
+	resBody, err := b.circuidController(ctx, request, keydbKey)
 	if err != nil {
-		if errors.As(err, &customerrors.ErrCodes{}) {
-			return nil, err
-		}
-		keydbResult, keydbErr := b.keydbClient.Get(ctx, keydbKey).Result()
-		if keydbErr != nil {
-			return nil, fmt.Errorf("keydb error: %s; service error: %w", keydbErr.Error(), err)
-		}
-		resBody = []byte(keydbResult)
-		logrus.Info("the result was used by keydb")
+		return nil, err
 	}
 
 	var result []domain_domain.Companion
@@ -98,17 +148,9 @@ func (b balancer) GetRouteInfo(ctx context.Context, req *domain_domain.GetRouteI
 	}
 
 	keydbKey := fmt.Sprintf("%s|%s|%s", u.Path, req.ClientID, req.OneOfPath)
-	resBody, err := b.requestSender(request)
+	resBody, err := b.circuidController(ctx, request, keydbKey)
 	if err != nil {
-		if errors.As(err, &customerrors.ErrCodes{}) {
-			return nil, err
-		}
-		keydbResult, keydbErr := b.keydbClient.Get(ctx, keydbKey).Result()
-		if keydbErr != nil {
-			return nil, fmt.Errorf("keydb error: %s; service error: %w", keydbErr.Error(), err)
-		}
-		resBody = []byte(keydbResult)
-		logrus.Info("the result was used by keydb")
+		return nil, err
 	}
 
 	var result []domain_domain.Route

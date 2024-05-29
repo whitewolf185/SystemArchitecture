@@ -4,16 +4,8 @@ networks:
   internal:
     driver: bridge
 
-# volumes:
-#  db:
-#    driver: local
-#    driver_opts:
-#      device: ./database
-#      o: bind
-#       type: local
-
 services:
-  db:
+  postgres-db:
     image: postgres
     restart: always
     environment:
@@ -26,13 +18,13 @@ services:
       - internal
     volumes:
       - ./database:/var/lib/postgresql/data
-  backend:
+  client-service:
     build: .
     environment:
       ENV_FILE_NAME: values_prod.yaml
       PGPASSWORD: postgres
     ports:
-      - "8080:8080"
+      - "8082:8082"
     networks:
       - internal
     depends_on:

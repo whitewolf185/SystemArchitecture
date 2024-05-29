@@ -12,9 +12,9 @@ env:
   - name: client_service_port
     value: 8081
   - name: client_service_host
-    value: localhost
+    value: client-service
     
   - name: domain_service_port
     value: 8082
   - name: domain_service_host
-    value: localhost
+    value: domain-service

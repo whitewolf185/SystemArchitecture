@@ -3,9 +3,11 @@ package main
 import (
 	"context"
 	"net/http"
+	"time"
 
 	"github.com/sirupsen/logrus"
 
+	"github.com/whitewolf185/SystemArchitecture/gateway/api/http_balancer/circuit_breaker"
 	"github.com/whitewolf185/SystemArchitecture/gateway/api/http_balancer/domain_balancer"
 	"github.com/whitewolf185/SystemArchitecture/gateway/api/http_balancer/people_balancer"
 	"github.com/whitewolf185/SystemArchitecture/gateway/api/middleware"
@@ -25,8 +27,9 @@ func main() {
 	}
 
 	// -- depencies --
+	circuidBreaker := circuit_breaker.NewCircuiBreaker(3, time.Minute)
 	peopleBalancer := people_balancer.New("person", config.GetValue(config.ClientServicePort))
-	domainBalancer := domain_balancer.New("domain", config.GetValue(config.DomainServicePort), keydbClient)
+	domainBalancer := domain_balancer.New("domain", config.GetValue(config.DomainServicePort), keydbClient, circuidBreaker)
 
 	// Имплементация API
 

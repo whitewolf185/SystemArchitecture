@@ -1,0 +1,7 @@
+values_local.yaml
+.gitignore
+.gitattributes
+.vscode/
+.idea/
+README.md
+*.js
