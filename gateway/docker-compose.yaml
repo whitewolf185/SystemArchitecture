@@ -4,16 +4,8 @@ networks:
   internal:
     driver: bridge
 
-# volumes:
-#  db:
-#    driver: local
-#    driver_opts:
-#      device: ./database
-#      o: bind
-#       type: local
-
 services:
-  backend:
+  gateway:
     build: .
     environment:
       ENV_FILE_NAME: values_prod.yaml
@@ -22,6 +14,8 @@ services:
     networks:
       - internal
     entrypoint: ["make", "run"]
+    depends_on:
+     - keydb
     deploy:
       restart_policy:
         condition: on-failure

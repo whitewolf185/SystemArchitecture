@@ -4,16 +4,8 @@ networks:
   internal:
     driver: bridge
 
-# volumes:
-#  db:
-#    driver: local
-#    driver_opts:
-#      device: ./database
-#      o: bind
-#       type: local
-
 services:
-  db:
+  mongo-db:
     image: mongo
     restart: always
     environment:
@@ -27,12 +19,12 @@ services:
       - ./database:/data/db
     healthcheck:
       test: echo 'db.runCommand("ping").ok' | mongosh localhost:27017/test --quiet
-  backend:
+  domain-service:
     build: .
     environment:
       ENV_FILE_NAME: values_prod.yaml
     ports:
-      - "8080:8080"
+      - "8081:8081"
     networks:
       - internal
     depends_on:
