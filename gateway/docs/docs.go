@@ -15,6 +15,157 @@ const docTemplate = `{
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
+        "/gateway/CreateUser": {
+            "post": {
+                "description": "создание пользователя. Если пользователь с таким username уже существует, то будет выдана ошибка",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "client_service"
+                ],
+                "operationId": "client_service_create_user",
+                "parameters": [
+                    {
+                        "description": "Данные для создания пользователя. Поля username и password не могут быть пустыми.",
+                        "name": "input",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/github_com_whitewolf185_SystemArchitecture_client-service_api_domain.CreateUserPayload"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_whitewolf185_SystemArchitecture_client-service_api_domain.Person"
+                        }
+                    },
+                    "default": {
+                        "description": "",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_whitewolf185_SystemArchitecture_domain-service_pkg_custom_errors.ErrCodes"
+                        }
+                    }
+                }
+            }
+        },
+        "/gateway/DeleteUserByID": {
+            "delete": {
+                "description": "удаление пользователя пользователя",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "client_service"
+                ],
+                "operationId": "client_service_delete_user",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "name": "id",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_whitewolf185_SystemArchitecture_client-service_api_domain.Person"
+                        }
+                    },
+                    "default": {
+                        "description": "",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_whitewolf185_SystemArchitecture_domain-service_pkg_custom_errors.ErrCodes"
+                        }
+                    }
+                }
+            }
+        },
+        "/gateway/GetClientByID": {
+            "get": {
+                "description": "получение пользователя по его id",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "client_service"
+                ],
+                "operationId": "client_service_get_client_by_ID",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "name": "id",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_whitewolf185_SystemArchitecture_client-service_api_domain.Person"
+                        }
+                    },
+                    "default": {
+                        "description": "",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_whitewolf185_SystemArchitecture_domain-service_pkg_custom_errors.ErrCodes"
+                        }
+                    }
+                }
+            }
+        },
+        "/gateway/SearchUserByUserName": {
+            "get": {
+                "description": "удаление пользователя пользователя",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "client_service"
+                ],
+                "operationId": "client_service_swarch_user_by_user_name",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "name": "user_name_in",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/github_com_whitewolf185_SystemArchitecture_client-service_api_domain.Person"
+                            }
+                        }
+                    },
+                    "default": {
+                        "description": "",
+                        "schema": {
+                            "$ref": "#/definitions/github_com_whitewolf185_SystemArchitecture_domain-service_pkg_custom_errors.ErrCodes"
+                        }
+                    }
+                }
+            }
+        },
         "/gateway/Login": {
             "post": {
                 "description": "Login пользователя",
@@ -284,6 +435,34 @@ const docTemplate = `{
             "type": "object",
             "properties": {
                 "password": {
+                    "type": "string"
+                },
+                "user_name": {
+                    "type": "string"
+                }
+            }
+        },
+        "github_com_whitewolf185_SystemArchitecture_client-service_api_domain.CreateUserPayload": {
+            "type": "object",
+            "properties": {
+                "is_driver": {
+                    "type": "boolean"
+                },
+                "password": {
+                    "type": "string"
+                },
+                "user_name": {
+                    "type": "string"
+                }
+            }
+        },
+        "github_com_whitewolf185_SystemArchitecture_client-service_api_domain.Person": {
+            "type": "object",
+            "properties": {
+                "driver": {
+                    "type": "boolean"
+                },
+                "id": {
                     "type": "string"
                 },
                 "user_name": {

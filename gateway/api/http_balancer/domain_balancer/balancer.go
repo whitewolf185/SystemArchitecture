@@ -6,16 +6,14 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"io"
 	"net/http"
 	"net/url"
-	"reflect"
-	"strings"
 	"time"
 
 	"github.com/redis/go-redis/v9"
 	"github.com/sirupsen/logrus"
 	domain_domain "github.com/whitewolf185/SystemArchitecture/domain-service/api/domain"
+	"github.com/whitewolf185/SystemArchitecture/gateway/api/http_balancer"
 	"github.com/whitewolf185/SystemArchitecture/gateway/api/http_balancer/circuit_breaker"
 	"github.com/whitewolf185/SystemArchitecture/gateway/internal/config"
 	customerrors "github.com/whitewolf185/SystemArchitecture/gateway/pkg/custom_errors"
@@ -36,7 +34,7 @@ type balancer struct {
 	keydbClient    *redis.Client
 }
 
-func New(apiName string, servicePort string, keydbClient *redis.Client, circuidBreaker CircuitBreaker) balancer {
+func New(apiName string, keydbClient *redis.Client, circuidBreaker CircuitBreaker) balancer {
 	return balancer{
 		apiName:        apiName,
 		client:         http.Client{},
@@ -61,7 +59,7 @@ func (b balancer) circuidController(ctx context.Context, request *http.Request, 
 		logrus.Info("the result was used by keydb")
 	}
 	if circuidStatus == circuit_breaker.Closed {
-		resBody, err = b.requestSender(request)
+		resBody, err = http_balancer.RequestSender(request)
 		if err != nil {
 			if errors.As(err, &customerrors.ErrCodes{}) {
 				return nil, err
@@ -74,7 +72,7 @@ func (b balancer) circuidController(ctx context.Context, request *http.Request, 
 	if circuidStatus == circuit_breaker.HalfOpened {
 		requestsCounter := b.circuidBreaker.CountHalfOpenedRequests()
 		if requestsCounter%2 == 0 {
-			resBody, err = b.requestSender(request)
+			resBody, err = http_balancer.RequestSender(request)
 			if err != nil {
 				if errors.As(err, &customerrors.ErrCodes{}) {
 					return nil, err
@@ -101,7 +99,7 @@ func (b balancer) GetCompanionInfo(ctx context.Context, req *domain_domain.GetCo
 		return nil, customerrors.CodesBadRequest(fmt.Errorf("empty request"))
 	}
 
-	query := b.prepareQuery(req)
+	query := http_balancer.PrepareQuery(req)
 	u := url.URL{
 		Scheme:   "http",
 		Host:     b.apiHost,
@@ -135,7 +133,7 @@ func (b balancer) GetRouteInfo(ctx context.Context, req *domain_domain.GetRouteI
 		return nil, customerrors.CodesBadRequest(fmt.Errorf("empty request"))
 	}
 
-	query := b.prepareQuery(req)
+	query := http_balancer.PrepareQuery(req)
 	u := url.URL{
 		Scheme:   "http",
 		Host:     b.apiHost,
@@ -184,7 +182,7 @@ func (b balancer) CreateRoute(ctx context.Context, req *domain_domain.CreateRout
 		return nil, fmt.Errorf("cannot build a request: %w", err)
 	}
 
-	resBody, err := b.requestSender(request)
+	resBody, err := http_balancer.RequestSender(request)
 	if err != nil {
 		return nil, err
 	}
@@ -218,7 +216,7 @@ func (b balancer) CreateCompanion(ctx context.Context, req *domain_domain.Create
 		return nil, fmt.Errorf("cannot build a request: %w", err)
 	}
 
-	resBody, err := b.requestSender(request)
+	resBody, err := http_balancer.RequestSender(request)
 	if err != nil {
 		return nil, err
 	}
@@ -237,7 +235,7 @@ func (b balancer) DeleteRoute(ctx context.Context, req *domain_domain.DeleteRout
 		return customerrors.CodesBadRequest(fmt.Errorf("empty request"))
 	}
 
-	query := b.prepareQuery(req)
+	query := http_balancer.PrepareQuery(req)
 	u := url.URL{
 		Scheme:   "http",
 		Host:     b.apiHost,
@@ -249,7 +247,7 @@ func (b balancer) DeleteRoute(ctx context.Context, req *domain_domain.DeleteRout
 		return fmt.Errorf("cannot build a request: %w", err)
 	}
 
-	_, err = b.requestSender(request)
+	_, err = http_balancer.RequestSender(request)
 	return err
 }
 
@@ -259,7 +257,7 @@ func (b balancer) DeleteCompanion(ctx context.Context, req *domain_domain.Delete
 		return customerrors.CodesBadRequest(fmt.Errorf("empty request"))
 	}
 
-	query := b.prepareQuery(req)
+	query := http_balancer.PrepareQuery(req)
 	u := url.URL{
 		Scheme:   "http",
 		Host:     b.apiHost,
@@ -271,68 +269,9 @@ func (b balancer) DeleteCompanion(ctx context.Context, req *domain_domain.Delete
 		return fmt.Errorf("cannot build a request: %w", err)
 	}
 
-	_, err = b.requestSender(request)
+	_, err = http_balancer.RequestSender(request)
 
 	return err
-}
-
-func (b balancer) prepareQuery(request any) url.Values {
-	result := make(url.Values)
-	if request == nil {
-		return result
-	}
-	fields := reflect.TypeOf(request).Elem()
-	// fmt.Println(fields.NumField())
-	for i := 0; i < fields.NumField(); i++ {
-		currField := fields.Field(i)
-		// fmt.Println(currField)
-		// fmt.Println(currField.Tag.Get("in"))
-		if strings.HasPrefix(currField.Tag.Get("in"), "query=") {
-			queryKey := strings.Split(currField.Tag.Get("in"), "=")[1]
-			queryValue := reflect.ValueOf(request).Elem().Field(i).String()
-			// fmt.Printf("queryKey: %s, queryValue: %s\n", queryKey, queryValue)
-			result.Set(queryKey, queryValue)
-		}
-	}
-	return result
-}
-
-func (b balancer) requestSender(request *http.Request) ([]byte, error) {
-	client := &http.Client{}
-
-	request.Header.Add("Content-Type", "application/json")
-	logrus.Info(request)
-
-	res, err := client.Do(request)
-	if err != nil {
-		return nil, fmt.Errorf("gateway: unkwodn error: %w", err)
-	}
-	if res == nil {
-		return nil, fmt.Errorf("empty response")
-	}
-	logrus.Infof("status code: %d, type: %T", res.StatusCode, res.StatusCode)
-	switch res.StatusCode {
-	case http.StatusBadRequest:
-		return nil, customerrors.CodesBadRequest(err)
-	case http.StatusInternalServerError:
-		return nil, err
-	case http.StatusUnauthorized:
-		return nil, customerrors.CodesUnauthorized(err)
-	case http.StatusNotFound:
-		return nil, customerrors.CodesNotFound(err)
-	}
-	defer res.Body.Close()
-
-	resBody, err := io.ReadAll(res.Body)
-	if err != nil {
-		return nil, fmt.Errorf("gateway: cannot ready body: %w", err)
-	}
-	if resBody == nil {
-		return nil, nil
-	}
-	logrus.Info(string(resBody))
-
-	return resBody, nil
 }
 
 func (b balancer) setValueToKeydb(ctx context.Context, request string, response any) error {

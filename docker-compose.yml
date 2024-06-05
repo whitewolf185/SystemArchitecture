@@ -16,7 +16,7 @@ services:
     environment:
       ENV_FILE_NAME: values_prod.yaml
     ports:
-      - "8080:8080"
+      - "80:80"
     networks:
       - internal
     entrypoint: ["make", "run-docker"]

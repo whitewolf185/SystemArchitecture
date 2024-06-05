@@ -28,8 +28,8 @@ func main() {
 
 	// -- depencies --
 	circuidBreaker := circuit_breaker.NewCircuiBreaker(3, time.Minute)
-	peopleBalancer := people_balancer.New("person", config.GetValue(config.ClientServicePort))
-	domainBalancer := domain_balancer.New("domain", config.GetValue(config.DomainServicePort), keydbClient, circuidBreaker)
+	peopleBalancer := people_balancer.New("person")
+	domainBalancer := domain_balancer.New("domain", keydbClient, circuidBreaker)
 
 	// Имплементация API
 

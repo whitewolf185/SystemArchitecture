@@ -10,30 +10,42 @@ import (
 )
 
 func newDomainRouter(errHandler middleware.ErrHandler) chi.Router {
-	domainRouter := chi.NewRouter()
+	gatewayRouter := chi.NewRouter()
 	// GET
-	domainRouter.With(httpin.NewInput(domain_domain.GetCompanionInfoRequest{})).Get("/"+domain_domain.GetCompanionInfo.String(),
+	gatewayRouter.With(httpin.NewInput(domain_domain.GetCompanionInfoRequest{})).Get("/"+domain_domain.GetCompanionInfo.String(),
 		errHandler.ErrMiddleware(domain_domain.GetCompanionInfo),
 	)
-	domainRouter.With(httpin.NewInput(domain_domain.GetRouteInfoRequest{})).Get("/"+domain_domain.GetRouteInfo.String(),
+	gatewayRouter.With(httpin.NewInput(domain_domain.GetRouteInfoRequest{})).Get("/"+domain_domain.GetRouteInfo.String(),
 		errHandler.ErrMiddleware(domain_domain.GetRouteInfo),
 	)
+	gatewayRouter.With(httpin.NewInput(domain_client_service.GetPersonByIDRequest{})).Get("/"+domain_client_service.GetClientByID.String(),
+		errHandler.ErrMiddleware(domain_client_service.GetClientByID),
+	)
+	gatewayRouter.With(httpin.NewInput(domain_client_service.SearchUserByUserNameRequest{})).Get("/"+domain_client_service.SearchUserByUserName.String(),
+		errHandler.ErrMiddleware(domain_client_service.SearchUserByUserName),
+	)
 	// POST
-	domainRouter.With(httpin.NewInput(domain_domain.CreateRouteRequest{})).Post("/"+domain_domain.CreateRoute.String(),
+	gatewayRouter.With(httpin.NewInput(domain_domain.CreateRouteRequest{})).Post("/"+domain_domain.CreateRoute.String(),
 		errHandler.ErrMiddleware(domain_domain.CreateRoute),
 	)
-	domainRouter.With(httpin.NewInput(domain_domain.CreateCompanionRequest{})).Post("/"+domain_domain.CreateCompanion.String(),
+	gatewayRouter.With(httpin.NewInput(domain_domain.CreateCompanionRequest{})).Post("/"+domain_domain.CreateCompanion.String(),
 		errHandler.ErrMiddleware(domain_domain.CreateCompanion),
 	)
-	domainRouter.With(httpin.NewInput(domain_client_service.LoginRequest{})).Post("/"+domain_client_service.Login.String(),
+	gatewayRouter.With(httpin.NewInput(domain_client_service.LoginRequest{})).Post("/"+domain_client_service.Login.String(),
 		errHandler.ErrMiddleware(domain_client_service.Login),
 	)
+	gatewayRouter.With(httpin.NewInput(domain_client_service.CreateUserRequest{})).Post("/"+domain_client_service.CreateUser.String(),
+		errHandler.ErrMiddleware(domain_client_service.CreateUser),
+	)
 	// DELETE
-	domainRouter.With(httpin.NewInput(domain_domain.DeleteRouteRequest{})).Delete("/"+domain_domain.DeleteRoute.String(),
+	gatewayRouter.With(httpin.NewInput(domain_domain.DeleteRouteRequest{})).Delete("/"+domain_domain.DeleteRoute.String(),
 		errHandler.ErrMiddleware(domain_domain.DeleteRoute),
 	)
-	domainRouter.With(httpin.NewInput(domain_domain.DeleteCompanionRequest{})).Delete("/"+domain_domain.DeleteCompanion.String(),
+	gatewayRouter.With(httpin.NewInput(domain_domain.DeleteCompanionRequest{})).Delete("/"+domain_domain.DeleteCompanion.String(),
 		errHandler.ErrMiddleware(domain_domain.DeleteCompanion),
 	)
-	return domainRouter
+	gatewayRouter.With(httpin.NewInput(domain_client_service.DeleteUserByIDRequest{})).Delete("/"+domain_client_service.DeleteUserByID.String(),
+		errHandler.ErrMiddleware(domain_client_service.DeleteUserByID),
+	)
+	return gatewayRouter
 }

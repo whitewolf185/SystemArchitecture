@@ -182,6 +182,26 @@ func (em ErrHandler) handleTypeSwitcher(ctx context.Context, req *http.Request, 
 				return em.personHandlers.Login(ctx, nil)
 			}
 			return em.personHandlers.Login(ctx, inputQuery.(*domain_client_service.LoginRequest))
+		case domain_client_service.CreateUser:
+			if inputQuery == nil {
+				return em.personHandlers.CreateUser(ctx, nil)
+			}
+			return em.personHandlers.CreateUser(ctx, inputQuery.(*domain_client_service.CreateUserRequest))
+		case domain_client_service.GetClientByID:
+			if inputQuery == nil {
+				return em.personHandlers.GetClientByID(ctx, nil)
+			}
+			return em.personHandlers.GetClientByID(ctx, inputQuery.(*domain_client_service.GetPersonByIDRequest))
+		case domain_client_service.SearchUserByUserName:
+			if inputQuery == nil {
+				return em.personHandlers.SearchUserByUserName(ctx, nil)
+			}
+			return em.personHandlers.SearchUserByUserName(ctx, inputQuery.(*domain_client_service.SearchUserByUserNameRequest))
+		case domain_client_service.DeleteUserByID:
+			if inputQuery == nil {
+				return em.personHandlers.DeleteUserByID(ctx, nil)
+			}
+			return em.personHandlers.DeleteUserByID(ctx, inputQuery.(*domain_client_service.DeleteUserByIDRequest))
 		}
 
 	}

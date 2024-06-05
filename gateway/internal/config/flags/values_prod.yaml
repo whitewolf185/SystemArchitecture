@@ -3,9 +3,9 @@ env:
     value: keydb:6379
 
   - name: listen_port
-    value: 8080
+    value: 80
   - name: server_ip
-    value: localhost
+    value: 95.165.166.169
   - name: jwt_secret
     value: 2f94834f-dcdd-4328-bdcf-77139a8ef40c
 

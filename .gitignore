@@ -1,6 +1,7 @@
 # docs ignore
 docs/.structurizr/index/*
 docs/.structurizr/images/thumbnail.png
+database/
 
 #mongo playground
 *.js
